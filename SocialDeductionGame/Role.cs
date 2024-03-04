@@ -1,4 +1,4 @@
-namespace Werewolf;
+namespace SocialDeductionGame;
 
 public abstract class Role
 {

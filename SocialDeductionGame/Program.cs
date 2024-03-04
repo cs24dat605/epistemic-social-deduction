@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using Werewolf;
+using SocialDeductionGame;
 
 Game WerewolfGame = Game.Instance;
 WerewolfGame.StartGame();

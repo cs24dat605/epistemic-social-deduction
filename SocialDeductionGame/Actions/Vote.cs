@@ -1,4 +1,4 @@
-namespace Werewolf.Actions;
+namespace SocialDeductionGame.Actions;
 
 public class Vote
 {

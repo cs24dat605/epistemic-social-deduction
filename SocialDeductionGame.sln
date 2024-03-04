@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf", "Werewolf\Werewolf.csproj", "{D543BC5F-AC06-4D8F-AF8C-17D6C1BC2084}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialDeductionGame", "SocialDeductionGame\SocialDeductionGame.csproj", "{D543BC5F-AC06-4D8F-AF8C-17D6C1BC2084}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

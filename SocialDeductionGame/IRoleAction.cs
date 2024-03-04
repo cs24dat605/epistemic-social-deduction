@@ -1,4 +1,4 @@
-namespace Werewolf;
+namespace SocialDeductionGame;
 
 public interface IRoleNightAction
 {

@@ -1,4 +1,4 @@
-namespace Werewolf.Roles;
+namespace SocialDeductionGame.Roles;
 
 public class Werewolf : Role, IRoleNightAction
 {
