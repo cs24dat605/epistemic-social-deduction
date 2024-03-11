@@ -4,6 +4,7 @@ public class World
 {
     public List<PossiblePlayer> PossiblePlayer { get; set; }
     public int PossibleScore = 0;
+    public bool isActive = true;
     public List<Accusations> Accusations = new List<Accusations>();
     
     public World(List<PossiblePlayer> players)
