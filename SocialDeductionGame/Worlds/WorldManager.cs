@@ -32,8 +32,8 @@ public static class WorldManager
         {
             if (counts.Any(kvp => curArray.Count(num => num == kvp.Key) != kvp.Value)) return;
             
-            var world = new World(curArray.Select(role =>
-                new PossiblePlayer(role, Game.Instance.Players.ElementAt(i-1))
+            var world = new World(curArray.Select((role, playerIndex) =>
+                new PossiblePlayer(role, Game.Instance.Players.ElementAt(playerIndex))
             ).ToList());
             uniqueArrays.Add(world);
 
