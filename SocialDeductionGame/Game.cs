@@ -1,5 +1,7 @@
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace SocialDeductionGame
 {
@@ -104,16 +106,108 @@ namespace SocialDeductionGame
             Console.WriteLine("Day Phase");
             
             // Preform day action before voting might need changing?
-            foreach (Player player in Players)
+            foreach (Player player in Players.Where(player => player.IsAlive == true))
             {
-                if (player is {IsAlive:true, Role: IRoleDayAction dayAction})
+                if (player is {Role: IRoleDayAction dayAction})
                 {
                     dayAction.PerformDayAction(Players);
                 }
             }
 
             // Voting stuff
-            
+            List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
+            foreach (Player player in Players.Where (player => player.IsAlive == true))
+            {
+                VotingPlayer voting = new VotingPlayer(player, 0);
+                votingPlayers.Add(voting);
+            }
+            foreach (Player player in Players.Where(player => player.IsAlive == true))
+            {
+                if (player.IsAlive)
+                {
+                    int MaxPossiblescore = 0;
+
+                    //MaxPossible score
+                    foreach (World world in player.PossibleWorlds.Where(world => world.isActive == true))
+                    {
+                        if(MaxPossiblescore < world.PossibleScore)
+                        {
+                            MaxPossiblescore = world.PossibleScore;
+                        }
+                    }
+
+                    //Generating a list of all equally most possible worlds
+                    List<World> worldList = new List<World>();
+                    foreach(World world in player.PossibleWorlds.Where(world => world.PossibleScore == MaxPossiblescore && world.isActive == true))
+                    {
+                        worldList.Add(world);
+                    }
+
+                    //Select at random which of the most likely worlds to choose
+                    var random = new Random();
+                    int index = random.Next(worldList.Count);
+
+                    World SelectedWorld = worldList[index];
+                    foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayer)
+                    {
+                        Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
+                    }
+
+                    List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
+                    if ( player.Role is Villager || player.Role is Seer)
+                    {
+                        foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == false))
+                        {
+                            playerlist.Add(susplayer);
+                        }
+                    }
+                    else if (player.Role is Werewolf)
+                    {
+                        foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == true))
+                        {
+                            playerlist.Add(susplayer);
+                        }
+                    }
+
+                    index = random.Next(playerlist.Count);
+                    Player SelectedPlayer = playerlist[index].ActualPlayer;
+
+                    foreach (VotingPlayer votingPlayer in votingPlayers)
+                    {
+                        if (votingPlayer.VotedPlayer == SelectedPlayer)
+                        {
+                            votingPlayer.Votes++;
+                        }
+                    }
+                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.Role.ToString() + "");
+                }
+            }
+
+            //MaxVotes
+            int MaxVotes = 0;
+            foreach (VotingPlayer votedPlayer in votingPlayers)
+            {
+                Console.WriteLine(votedPlayer.VotedPlayer.Name + " " + votedPlayer.Votes.ToString());
+                if (MaxVotes < votedPlayer.Votes)
+                {
+                   MaxVotes = votedPlayer.Votes;
+                }
+            }
+
+            //Generating a list of all player that have gotten equal votes
+            List<VotingPlayer> TrialList = new List<VotingPlayer>();
+            if (TrialList.Count == 1)
+            {
+                //Kill this player
+            }
+            else
+            {
+                //Deicde how to handle this
+            }
+
+
+
+
         }
         
         private void RunNightPhase()
