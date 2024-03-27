@@ -5,7 +5,7 @@ public class Werewolf : Role, IRoleNightAction
     public Werewolf() 
     {
         Name = "Werewolf";
-        IsOnVillagerTeam = false;
+        IsTown = false;
     }
 
     public override void PerformNightAction(List<Player> players)

@@ -42,19 +42,9 @@ namespace SocialDeductionGame
             
             List<World> allWorlds = WorldManager.GenerateAllWorlds();
             WorldManager.MoveWorldsToPlayers(allWorlds);
-
-            foreach (var world in allWorlds)
-            {
-                Console.Write("Possible: ");
-                world.PrintPossible();
-                Console.Write("\nActual: ");
-                world.PrintActual();
-
-                Console.WriteLine("\n");
-            }
-                
+            
             // while (!GameFinished)
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 8; i++)
             {
                 RunDayPhase();
                 RunNightPhase();
@@ -106,7 +96,7 @@ namespace SocialDeductionGame
             Console.WriteLine("Day Phase");
             
             // Preform day action before voting might need changing?
-            foreach (Player player in Players.Where(player => player.IsAlive == true))
+            foreach (Player player in Players.Where(player => player.IsAlive))
             {
                 if (player is {Role: IRoleDayAction dayAction})
                 {
@@ -114,6 +104,13 @@ namespace SocialDeductionGame
                 }
             }
 
+            foreach (Player player in Players.Where(player => player.IsAlive))
+            {
+                player.Communicate();
+            }
+
+            
+            
             // Voting stuff
             List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
             foreach (Player player in Players.Where (player => player.IsAlive == true))
@@ -148,22 +145,22 @@ namespace SocialDeductionGame
                     int index = random.Next(worldList.Count);
 
                     World SelectedWorld = worldList[index];
-                    foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayer)
+                    foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayers)
                     {
-                        Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
+                        Console.WriteLine(player1.Name + " " + player1.PossibleRole);
                     }
 
                     List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
                     if ( player.Role is Villager || player.Role is Seer)
                     {
-                        foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == false))
+                        foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayers.Where(susplayer => susplayer.PossibleRole.IsTown == false))
                         {
                             playerlist.Add(susplayer);
                         }
                     }
                     else if (player.Role is Werewolf)
                     {
-                        foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == true))
+                        foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayers.Where(susplayer => susplayer.PossibleRole.IsTown == true))
                         {
                             playerlist.Add(susplayer);
                         }

@@ -5,7 +5,7 @@ public class Seer : Role, IRoleNightAction
     public Seer()
     {
         Name = "Seer";
-        IsOnVillagerTeam = true;
+        IsTown = true;
     }
 
     public override void PerformNightAction(List<Player> players)
