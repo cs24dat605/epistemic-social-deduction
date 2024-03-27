@@ -1,9 +1,9 @@
-namespace SocialDeductionGame;
+namespace SocialDeductionGame.Roles;
 
 public abstract class Role
 {
     public string Name { get; set; }
-    public bool IsOnVillagerTeam { get; set; }
+    public bool IsTown { get; set; }
 
     public virtual void PerformNightAction(List<Player> players) { }
     public virtual void PerformDayAction(List<Player> players) { }

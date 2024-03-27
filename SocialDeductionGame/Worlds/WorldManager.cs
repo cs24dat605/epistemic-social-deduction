@@ -1,3 +1,4 @@
+using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 
 namespace SocialDeductionGame.Worlds;
@@ -52,6 +53,33 @@ public static class WorldManager
         foreach (var player in Game.Instance.Players)
         {
             player.PossibleWorlds = worlds;
+        }
+    }
+
+    public static void UpdateWorldsByMessage(Message message)
+    {
+        foreach (var player in Game.Instance.Players)
+        {
+            UpdatePossibleWorlds(player, message);
+        }
+    }
+
+    public static void UpdatePossibleWorlds(Player player, Message message)
+    {
+        foreach (World world in player.PossibleWorlds) 
+        {
+            if (world.isActive) 
+            {
+                // Create the accusation
+                // TODO this can be done better
+                Accusations newAccusation = new Accusations {
+                    Accuser = message.Me,
+                    Acussee = message.Accused,
+                    Message = message
+                };
+
+                world.Accusations.Add(newAccusation);              
+            }
         }
     }
 }

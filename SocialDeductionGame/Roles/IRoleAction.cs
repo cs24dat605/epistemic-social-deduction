@@ -1,4 +1,4 @@
-namespace SocialDeductionGame;
+namespace SocialDeductionGame.Roles;
 
 public interface IRoleNightAction
 {
