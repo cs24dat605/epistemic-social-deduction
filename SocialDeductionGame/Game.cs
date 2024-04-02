@@ -1,5 +1,6 @@
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
+using SocialDeductionGame.Actions;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -26,17 +27,22 @@ namespace SocialDeductionGame
             }
         }
         
-        public void StartGame(int players = -1, int werewolves = -1, int seers = -1)
+        public void StartGame(int players = -1, int godfather = -1, int sheriffs = -1, int mafioso = -1, int escort = -1, int consort = -1)
         {
-            if (players != -1)
+            /*if (players != -1)
             {
                 GameConfig.Players = players;
-                if (werewolves != -1)
-                    GameConfig.Werewolves = werewolves;
-                
-                if (seers != -1)
-                    GameConfig.Seers = seers;
-            }
+                if (godfather != -1)
+                    GameConfig.Godfather = godfather;
+                if (sheriffs != -1)
+                    GameConfig.Sheriffs = sheriffs;
+                if (mafioso != -1)
+                    GameConfig.Mafioso = mafioso;
+                if (escort != -1)
+                    GameConfig.Escort = escort;
+                if (consort != -1)
+                   GameConfig.Consort = consort;
+            }*/
             
             Players = CreatePlayers();
             
@@ -92,11 +98,13 @@ namespace SocialDeductionGame
         private List<Role> GetRoles()
         {
             var availableRoles = new List<Role>();
-            int numVillagers = GameConfig.Players - GameConfig.Seers - GameConfig.Werewolves;
             
-            availableRoles.AddRange(Enumerable.Repeat(new Villager(), numVillagers));
-            availableRoles.AddRange(Enumerable.Repeat(new Seer(), GameConfig.Seers));
-            availableRoles.AddRange(Enumerable.Repeat(new Werewolf(), GameConfig.Werewolves));
+            availableRoles.AddRange(Enumerable.Repeat(new Villager(), GameConfig.Villagers));
+            availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), GameConfig.Sheriffs));
+            availableRoles.AddRange(Enumerable.Repeat(new Godfather(), GameConfig.Godfather));
+            availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), GameConfig.Mafioso));
+            availableRoles.AddRange(Enumerable.Repeat(new Consort(), GameConfig.Consort));
+            availableRoles.AddRange(Enumerable.Repeat(new Escort(), GameConfig.Consort));
             
             return availableRoles;
         }
@@ -154,14 +162,14 @@ namespace SocialDeductionGame
                     }
 
                     List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
-                    if ( player.Role is Villager || player.Role is Seer)
+                    if ( player.Role.IsOnVillagerTeam)
                     {
                         foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == false))
                         {
                             playerlist.Add(susplayer);
                         }
                     }
-                    else if (player.Role is Werewolf)
+                    else 
                     {
                         foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == true))
                         {
@@ -213,14 +221,22 @@ namespace SocialDeductionGame
         private void RunNightPhase()
         {
             Console.WriteLine("Night Phase");
-            
+
+            List<Actions.Action> actions = new List<Actions.Action>();
+
             foreach (var player in Players)
             {
                 if (player is { IsAlive: true, Role: IRoleNightAction nightAction })
                 {
-                    nightAction.PerformNightAction(Players); 
+                    nightAction.PerformNightAction(player, actions); 
+                    
+                    
                 }
             }
+
+            ActionManager actionManager = new ActionManager(actions);
+
+            actionManager.HandleActions(Players);
         }
     }
 };

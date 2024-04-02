@@ -9,8 +9,11 @@ public static class WorldManager
         var counts = new Dictionary<Role, int>
         {
             { new Villager(), Game.Instance.GameConfig.Villagers }, 
-            { new Seer(), Game.Instance.GameConfig.Seers },
-            { new Werewolf(), Game.Instance.GameConfig.Werewolves }
+            { new Sheriff(), Game.Instance.GameConfig.Sheriffs },
+            { new Escort(), Game.Instance.GameConfig.Escort },
+            { new Godfather(), Game.Instance.GameConfig.Godfather },
+            { new Mafioso(), Game.Instance.GameConfig.Mafioso },
+            { new Consort(), Game.Instance.GameConfig.Consort }
         };
         
         return GenerateArraysBruteForce(counts);
