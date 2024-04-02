@@ -46,6 +46,10 @@ namespace SocialDeductionGame
             // while (!GameFinished)
             for (var i = 0; i < 8; i++)
             {
+                Console.WriteLine("");
+                Console.WriteLine("Round " + (i + 1));
+                Console.WriteLine("");
+                
                 RunDayPhase();
                 RunNightPhase();
 
@@ -147,7 +151,7 @@ namespace SocialDeductionGame
                     World SelectedWorld = worldList[index];
                     foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayers)
                     {
-                        Console.WriteLine(player1.Name + " " + player1.PossibleRole);
+                        // Console.WriteLine(player1.Name + " " + player1.PossibleRole);
                     }
 
                     List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
@@ -184,7 +188,7 @@ namespace SocialDeductionGame
             int MaxVotes = 0;
             foreach (VotingPlayer votedPlayer in votingPlayers)
             {
-                Console.WriteLine(votedPlayer.VotedPlayer.Name + " " + votedPlayer.Votes.ToString());
+                // Console.WriteLine(votedPlayer.VotedPlayer.Name + " " + votedPlayer.Votes.ToString());
                 if (MaxVotes < votedPlayer.Votes)
                 {
                    MaxVotes = votedPlayer.Votes;

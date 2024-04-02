@@ -39,6 +39,9 @@ public class Message
     
     public string GenerateText() 
     {
+        if (Intent == MessageIntent.Response)
+            return Template;
+        
         string messageText = Template;
 
         if (Me != null)

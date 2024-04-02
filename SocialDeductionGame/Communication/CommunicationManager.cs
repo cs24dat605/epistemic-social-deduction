@@ -16,27 +16,30 @@ public class CommunicationManager
         
         // TODO if player has explicit knowledge maybe leverage it?
         
+        List<PossiblePlayer> players = new List<PossiblePlayer>(player.PossibleWorlds[0].PossiblePlayers);
+        players.Remove(inquirePlayer);
+        players = players.Where(x => x.Name != player.Name).ToList(); 
+        
         Random random = new Random();
         Message question = CommunicationTemplates.Messages[random.Next(0, CommunicationTemplates.Messages.Count)];
         
         question.Me = player;
         question.Accused = inquirePlayer;
-        
-        List<PossiblePlayer> players = player.PossibleWorlds[0].PossiblePlayers;
-        players.Remove(inquirePlayer);
-        players = players.Where(x => x.Name != player.Name).ToList(); 
-
-
-        if (players.Count > 0) {
-            question.PlayerAsk = players[random.Next(0, players.Count)];
-        } else {
-            Console.WriteLine("ERORR ERROR");
-        }
-        
+        question.PlayerAsk = players[random.Next(0, players.Count)];
         question.Role = inquirePlayer.PossibleRole;
 
-        Console.WriteLine($"{question.GenerateText()}");
+        Console.WriteLine($"Communication: {question.GenerateText()}");
+
+        if (question.Responses != null && question.Responses.Count > 0)
+            RequestResponse(question);
 
         WorldManager.UpdateWorldsByMessage(question);
+    }
+
+    public void RequestResponse(Message question)
+    {
+        Random random = new Random();
+        Message response = question.Responses[random.Next(0, question.Responses.Count)];
+        Console.WriteLine($"Communication Response: {response.GenerateText()}");
     }
 }

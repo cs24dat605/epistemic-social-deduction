@@ -7,12 +7,15 @@ public static class LogicManager
     public static PossiblePlayer GetHighestInformationGainPlayer(List<World> PossibleWorlds)
     {
         World targetWorld = PossibleWorlds.MaxBy(x => x.PossibleScore);
-        List<PossiblePlayer> unknownPlayer = targetWorld.PossiblePlayers;
+        List<PossiblePlayer> unknownPlayer = new List<PossiblePlayer>(targetWorld.PossiblePlayers);
         
         // TODO Possiblity: Check for conflicting knowledge about player
         
+        // Copy list to avoid reference modification
+        List<PossiblePlayer> unknownPlayerCopy = new List<PossiblePlayer>(unknownPlayer);
+
         // Check world for if no information is know about the player
-        foreach (var possiblePlayer in unknownPlayer)
+        foreach (var possiblePlayer in unknownPlayerCopy)
         {
             // Remove player for target list if we already have knowledge about them
             if (targetWorld.Accusations.Any(x => x.Acussee == possiblePlayer))
@@ -20,19 +23,15 @@ public static class LogicManager
                 unknownPlayer.Remove(possiblePlayer);
             }
         }
-
-        Console.WriteLine($"daskdlkas: {unknownPlayer.Count}");
         
         // If every player has been accused of something reset list
-        if (unknownPlayer.Count == 0)
+        if (unknownPlayerCopy.Count == 0)
         {
-            unknownPlayer = targetWorld.PossiblePlayers;
+            unknownPlayerCopy = new List<PossiblePlayer>(targetWorld.PossiblePlayers);
         }
-        
-        Console.WriteLine($"daskdlkas: {targetWorld.PossiblePlayers.Count}");
         
         Random random = new Random();
         
-        return unknownPlayer[random.Next(0, unknownPlayer.Count)];
+        return unknownPlayerCopy[random.Next(0, unknownPlayerCopy.Count)];
     }
 }
