@@ -1,15 +1,17 @@
+using SocialDeductionGame.Communication;
+
 namespace SocialDeductionGame.Worlds;
 
 public class World
 {
     public List<PossiblePlayer> PossiblePlayers { get; set; }
-    public int PossibleScore = 0;
-    public bool isActive = true;
-    public List<Accusations> Accusations = new List<Accusations>();
+    public bool IsActive = true;
+    public int Marks = 0;
+    public List<Message> Accusations = new List<Message>();
     
-    public World(List<PossiblePlayer> playerses)
+    public World(List<PossiblePlayer> players)
     {
-        PossiblePlayers = playerses;
+        PossiblePlayers = players;
     }
 
     public void PrintPossible()

@@ -23,7 +23,7 @@ public class CommunicationManager
         Random random = new Random();
         Message question = CommunicationTemplates.Messages[random.Next(0, CommunicationTemplates.Messages.Count)];
         
-        question.Me = player;
+        question.Accuser = player;
         question.Accused = inquirePlayer;
         question.PlayerAsk = players[random.Next(0, players.Count)];
         question.Role = inquirePlayer.PossibleRole;
@@ -31,15 +31,29 @@ public class CommunicationManager
         Console.WriteLine($"Communication: {question.GenerateText()}");
 
         if (question.Responses != null && question.Responses.Count > 0)
+        {
             RequestResponse(question);
+            
+            // Handle UpdateWorldsByMessage in RequestResponse
+            return;
+        }
 
-        WorldManager.UpdateWorldsByMessage(question);
+        // Call the custom defined UpdateWorlds function
+        if (question.UpdateWorlds != null)
+                question.UpdateWorlds(question);
+
+
+        // WorldManager.UpdateWorldsByMessage(question);
     }
 
     public void RequestResponse(Message question)
     {
         Random random = new Random();
-        Message response = question.Responses[random.Next(0, question.Responses.Count)];
-        Console.WriteLine($"Communication Response: {response.GenerateText()}");
+        question.Response = question.Responses[random.Next(0, question.Responses.Count)].Text;
+        Console.WriteLine($"Communication Response: {question.Response}");
+        
+        // Wait till response is added to update the world by message
+        if (question.UpdateWorlds != null)
+            question.UpdateWorlds(question);
     }
 }

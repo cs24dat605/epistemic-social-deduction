@@ -9,14 +9,14 @@ public static class WorldManager
     {
         var counts = new Dictionary<Role, int>
         {
-            { new Villager(), Game.Instance.GameConfig.Villagers }, 
+            { new Villager(), Game.Instance.GameConfig.Villagers },
             { new Seer(), Game.Instance.GameConfig.Seers },
             { new Werewolf(), Game.Instance.GameConfig.Werewolves }
         };
-        
+
         return GenerateArraysBruteForce(counts);
     }
-    
+
     private static List<World> GenerateArraysBruteForce(Dictionary<Role, int> counts)
     {
         var numbers = counts.Keys.ToList();
@@ -27,12 +27,13 @@ public static class WorldManager
         return uniqueArrays;
     }
 
-    private static void GenerateCombinations(Role[] curArray, int i, List<Role> numbers, Dictionary<Role, int> counts, List<World> uniqueArrays)
+    private static void GenerateCombinations(Role[] curArray, int i, List<Role> numbers, Dictionary<Role, int> counts,
+        List<World> uniqueArrays)
     {
         if (i == curArray.Length)
         {
             if (counts.Any(kvp => curArray.Count(num => num == kvp.Key) != kvp.Value)) return;
-            
+
             var world = new World(curArray.Select((role, playerIndex) =>
                 new PossiblePlayer(role, Game.Instance.Players.ElementAt(playerIndex))
             ).ToList());
@@ -50,35 +51,46 @@ public static class WorldManager
 
     public static void MoveWorldsToPlayers(List<World> worlds)
     {
+        List<World> worldCopy = new List<World>(worlds);
         foreach (var player in Game.Instance.Players)
         {
-            player.PossibleWorlds = worlds;
+            player.PossibleWorlds = new List<World>(worldCopy);
         }
     }
 
-    public static void UpdateWorldsByMessage(Message message)
+    public static void UpdateWorldsByMessage(Message message, int type)
     {
         foreach (var player in Game.Instance.Players)
         {
-            UpdatePossibleWorlds(player, message);
-        }
-    }
-
-    public static void UpdatePossibleWorlds(Player player, Message message)
-    {
-        foreach (World world in player.PossibleWorlds) 
-        {
-            if (world.isActive) 
+            foreach (var pWorld in player.PossibleWorlds)
             {
-                // Create the accusation
-                // TODO this can be done better
-                Accusations newAccusation = new Accusations {
-                    Accuser = message.Me,
-                    Acussee = message.Accused,
-                    Message = message
-                };
+                if (!pWorld.IsActive)
+                    continue;
 
-                world.Accusations.Add(newAccusation);              
+                pWorld.Accusations.Add(message);
+
+                foreach (var pPlayer in pWorld.PossiblePlayers)
+                {
+                    // TODO maybe implement that this on is acccused instead in the message
+                    if (type == 0)
+                        if (pPlayer.Name != message.Accuser.Name)
+                            continue;
+
+                    if (type is 1 or 2 or 3)
+                        if (pPlayer.Name != message.Accused.Name)
+                            continue;
+                    
+                    bool isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
+
+                    // Flip statement by marking the opposite roles
+                    if (type == 3 || message.Response == "No")
+                        isCorrect = pPlayer.PossibleRole.Name != message.Role.Name;
+                    
+                    if (isCorrect)
+                        pWorld.Marks++;
+                    else
+                        pWorld.Marks--;
+                }
             }
         }
     }

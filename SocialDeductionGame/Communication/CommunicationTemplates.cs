@@ -1,38 +1,52 @@
 using SocialDeductionGame.Roles;
-using SocialDeductionGame.Worlds;
+using static SocialDeductionGame.Worlds.WorldManager;
 
 namespace SocialDeductionGame.Communication;
 
 public static class CommunicationTemplates
 {
-    static Message _yesResponse = new Message( MessageIntent.Response, "Yes");
-    static Message _noResponse = new Message(MessageIntent.Response, "No");
+    private static List<Message> yesNoResponse = new List<Message>
+    {
+        new Message( MessageIntent.Response, "Yes", null, (m) => UpdateWorldsByMessage(m, 3)),
+        new Message(MessageIntent.Response, "No", null, (m) => UpdateWorldsByMessage(m, 3))
+    };
     
-    static Message _iAmVillager = new Message(MessageIntent.Response, "I am Villager");
-    static Message _iAmSeer = new Message(MessageIntent.Response, "I am Seer");
-    // TODO add rest of villager rolesmm
+    // TODO Possibility of iterating over all town roles and adding them
+    // TODO replace roles here when implemented
+    private static List<Message> roleResponse = new List<Message>
+    {
+        new Message(MessageIntent.Response, "I am Villager", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Sheriff", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Investigator", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Doctor", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Escort", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Veteran", null, (m) => UpdateWorldsByMessage(m, 2), new Villager()),
+        new Message(MessageIntent.Response, "I am Vigilante", null, (m) => UpdateWorldsByMessage(m, 2), new Villager())
+    };
 
     public static List<Message> Messages = new List<Message>
     {
         new Message(
             MessageIntent.Defend,
             "{Me} say: I am {MyRole}",
-            new List<Message> { }
+            new List<Message> { },
+            (m) => UpdateWorldsByMessage(m, 0)
         ),
         new Message(
             MessageIntent.Accuse,
             "{Me} say: {Accused} is {Role}",
-            new List<Message> { }
+            new List<Message> { },
+            (m) => UpdateWorldsByMessage(m, 1)
         ),
         new Message(
             MessageIntent.Inquire,
             "{Me} say: What is your role, {Accused}?",
-            new List<Message> { _iAmVillager, _iAmSeer }
+            roleResponse
         ),
         new Message(
             MessageIntent.Inquire,
             "{Me} say: {PlayerAsk} Do you believe {Accused} is {Role}?",
-            new List<Message> { _yesResponse, _noResponse }
+            yesNoResponse
         ),
 
     };

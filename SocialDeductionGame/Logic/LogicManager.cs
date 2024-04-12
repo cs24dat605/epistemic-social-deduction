@@ -6,7 +6,7 @@ public static class LogicManager
 {
     public static PossiblePlayer GetHighestInformationGainPlayer(List<World> PossibleWorlds)
     {
-        World targetWorld = PossibleWorlds.MaxBy(x => x.PossibleScore);
+        World targetWorld = PossibleWorlds.MaxBy(x => x.Marks);
         List<PossiblePlayer> unknownPlayer = new List<PossiblePlayer>(targetWorld.PossiblePlayers);
         
         // TODO Possiblity: Check for conflicting knowledge about player
@@ -18,7 +18,7 @@ public static class LogicManager
         foreach (var possiblePlayer in unknownPlayerCopy)
         {
             // Remove player for target list if we already have knowledge about them
-            if (targetWorld.Accusations.Any(x => x.Acussee == possiblePlayer))
+            if (targetWorld.Accusations.Any(x => x.Accused == possiblePlayer))
             {
                 unknownPlayer.Remove(possiblePlayer);
             }

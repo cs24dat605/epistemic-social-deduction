@@ -40,7 +40,9 @@ namespace SocialDeductionGame
             
             Players = CreatePlayers();
             
-            List<World> allWorlds = WorldManager.GenerateAllWorlds();
+            
+            
+            List<World> allWorlds = new List<World>(WorldManager.GenerateAllWorlds());
             WorldManager.MoveWorldsToPlayers(allWorlds);
             
             // while (!GameFinished)
@@ -129,17 +131,17 @@ namespace SocialDeductionGame
                     int MaxPossiblescore = 0;
 
                     //MaxPossible score
-                    foreach (World world in player.PossibleWorlds.Where(world => world.isActive == true))
+                    foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
                     {
-                        if(MaxPossiblescore < world.PossibleScore)
+                        if(MaxPossiblescore < world.Marks)
                         {
-                            MaxPossiblescore = world.PossibleScore;
+                            MaxPossiblescore = world.Marks;
                         }
                     }
 
                     //Generating a list of all equally most possible worlds
                     List<World> worldList = new List<World>();
-                    foreach(World world in player.PossibleWorlds.Where(world => world.PossibleScore == MaxPossiblescore && world.isActive == true))
+                    foreach(World world in player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true))
                     {
                         worldList.Add(world);
                     }
@@ -206,9 +208,11 @@ namespace SocialDeductionGame
                 //Deicde how to handle this
             }
 
-
-
-
+            Console.WriteLine("Marks");
+            foreach (World pWorlds in Players[0].PossibleWorlds)
+            {
+                Console.Write($" {pWorlds.Marks}");
+            }
         }
         
         private void RunNightPhase()
