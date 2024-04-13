@@ -49,7 +49,7 @@ namespace SocialDeductionGame
             List<World> allWorlds = WorldManager.GenerateAllWorlds();
             WorldManager.MoveWorldsToPlayers(allWorlds);
 
-            foreach (var world in allWorlds)
+            /*foreach (var world in allWorlds)
             {
                 Console.Write("Possible: ");
                 world.PrintPossible();
@@ -57,7 +57,7 @@ namespace SocialDeductionGame
                 world.PrintActual();
 
                 Console.WriteLine("\n");
-            }
+            }*/
                 
             // while (!GameFinished)
             for (var i = 0; i < 10; i++)
@@ -100,12 +100,15 @@ namespace SocialDeductionGame
             var availableRoles = new List<Role>();
             
             availableRoles.AddRange(Enumerable.Repeat(new Villager(), GameConfig.Villagers));
-            availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), GameConfig.Sheriffs));
+            availableRoles.AddRange(Enumerable.Repeat(new Consigliere(), GameConfig.Consigliere));
             availableRoles.AddRange(Enumerable.Repeat(new Godfather(), GameConfig.Godfather));
             availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), GameConfig.Mafioso));
             availableRoles.AddRange(Enumerable.Repeat(new Consort(), GameConfig.Consort));
             availableRoles.AddRange(Enumerable.Repeat(new Escort(), GameConfig.Consort));
-            
+            availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), GameConfig.Sheriffs));
+            availableRoles.AddRange(Enumerable.Repeat(new Vigilante(), GameConfig.Vigilante));
+            availableRoles.AddRange(Enumerable.Repeat(new Veteran(), GameConfig.Veteran));
+
             return availableRoles;
         }
 
@@ -158,7 +161,7 @@ namespace SocialDeductionGame
                     World SelectedWorld = worldList[index];
                     foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayer)
                     {
-                        Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
+                        //Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
                     }
 
                     List<PossiblePlayer> playerlist = new List<PossiblePlayer>();

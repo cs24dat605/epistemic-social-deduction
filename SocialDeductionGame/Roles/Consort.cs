@@ -34,12 +34,9 @@ public class Consort : Role, IRoleNightAction
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
         {
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer)
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
             {
-                if (possiblePlayer.IsAlive && possiblePlayer.PossibleRole is Sheriff)
-                {
-                    sheriffAlive = true;
-                }
+                sheriffAlive = true;
             }
             if (sheriffAlive)
             {
@@ -63,7 +60,7 @@ public class Consort : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
             {
                 //Selecting the last sheriff (if there is more than one) 
                 //TODO: Make it such that the sheriff that is chosen is the sheriff that has the most amount of marks
@@ -81,13 +78,17 @@ public class Consort : Role, IRoleNightAction
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
             //Targeting a random villager, except the escort, as escort cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.PossibleRole is not Escort))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.PossibleRole is not Escort && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }
 
             while (selectedPlayer == null)
             {
+                if (selectedPlayers.Count == 0)
+                {
+                    break;
+                }
                 var randomVil = new Random();
                 int indexVil = random.Next(selectedPlayers.Count);
 

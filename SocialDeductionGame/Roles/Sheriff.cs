@@ -9,6 +9,7 @@ public class Sheriff : Role, IRoleNightAction
     {
         Name = "Sheriff";
         IsOnVillagerTeam = true;
+        checkedPlayers = new List<string>();
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
@@ -37,24 +38,37 @@ public class Sheriff : Role, IRoleNightAction
 
         PossiblePlayer selectedPlayer = null;
 
-        
+
         //Selecting a world at random from list
-        var random = new Random();
-        int index = random.Next(worldList.Count);
-
-        World SelectedWorld = worldList[index];
+        bool candidatesFound = false;
         List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
-
-        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == false))
+        while (!candidatesFound)
         {
-            selectedPlayers.Add(p);
+            var random = new Random();
+            int index = random.Next(worldList.Count);
+
+            World SelectedWorld = worldList[index];
+            
+
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == false && p.IsAlive == true))
+            {
+                selectedPlayers.Add(p);
+            }
+            if (selectedPlayers.Count > 0)
+            {
+                candidatesFound = true;
+            }
         }
 
         //Selecting a random mafia role
         while (selectedPlayer == null)
         {
+            if (selectedPlayers.Count == 0)
+            {
+                break;
+            }
             var randomVil = new Random();
-            int indexVil = random.Next(selectedPlayers.Count);
+            int indexVil = randomVil.Next(selectedPlayers.Count);
 
             selectedPlayer = selectedPlayers[indexVil];
             if (selectedPlayer.ActualPlayer.Name == player.Name)

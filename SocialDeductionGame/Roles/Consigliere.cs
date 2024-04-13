@@ -3,20 +3,19 @@ using Action = SocialDeductionGame.Actions.Action;
 
 namespace SocialDeductionGame.Roles;
 
-public class Godfather : Role, IRoleNightAction
+public class Consigliere : Role, IRoleNightAction
 {
-    public Godfather() 
+    public Consigliere()
     {
-        Name = "Godfather";
+        Name = "Consigliere";
         IsOnVillagerTeam = false;
+        checkedPlayers = new List<string>();
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
     {
-        //Godfather rules over the mafia
-        //Godfather determines who the mafia should kill
-        //The Mafioso caries out the godfathers will
-        //If the Mafioso is dead or disrupted the godfather kills the target
+        //The Consigliere is the mafia investigative role.
+        //The consigliere functions just like the sheriff
 
 
         //Assuming that the active world for any mafia class is only the worlds where they know the roles of each other
@@ -24,10 +23,10 @@ public class Godfather : Role, IRoleNightAction
 
         //Finding max possibility world
         int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true) )
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
         {
-            if (possibleWorld.PossibleScore > Max) 
-            { 
+            if (possibleWorld.PossibleScore > Max)
+            {
                 Max = possibleWorld.PossibleScore;
             }
         };
@@ -35,21 +34,22 @@ public class Godfather : Role, IRoleNightAction
         //Looking checking if sheriff is alive
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
         {
+
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff)) 
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
             {
-                sheriffAlive = true;
+                if (!player.Role.checkedPlayers.Contains(possiblePlayer.ActualPlayer.Name)) { sheriffAlive = true; }
             }
-            if(sheriffAlive) 
-            { 
-                worldList.Add(possibleWorld); 
+            if (sheriffAlive)
+            {
+                worldList.Add(possibleWorld);
             }
         };
 
         PossiblePlayer selectedPlayer = null;
 
         //If the sheriff is alive
-        if (worldList.Count != 0) 
+        if (worldList.Count != 0)
         {
 
             //Selecting a world at random
@@ -79,7 +79,7 @@ public class Godfather : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
             }
@@ -113,9 +113,11 @@ public class Godfather : Role, IRoleNightAction
         {
             Player target = new Player(selectedPlayer.ActualPlayer.Name, selectedPlayer.ActualPlayer.Role);
 
-            Action action = new Action(player, "Godfather", target);
+            Action action = new Action(player, "Consigliere", target);
 
             actions.Add(action);
+
+            player.Role.checkedPlayers.Add(target.Name);
 
         }
         else

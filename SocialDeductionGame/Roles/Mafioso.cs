@@ -35,12 +35,9 @@ public class Mafioso : Role, IRoleNightAction
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
         {
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer)
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
             {
-                if (possiblePlayer.IsAlive && possiblePlayer.PossibleRole is Sheriff)
-                {
-                    sheriffAlive = true;
-                }
+                sheriffAlive = true;
             }
             if (sheriffAlive)
             {
@@ -50,13 +47,9 @@ public class Mafioso : Role, IRoleNightAction
 
         PossiblePlayer selectedPlayer = null;
 
-        //If the sheriff is dead
-        if (worldList.Count == 0)
+        //If the sheriff is alive
+        if (worldList.Count != 0)
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
-            {
-                worldList.Add(possibleWorld);
-            };
 
             //Selecting a world at random
             var random = new Random();
@@ -64,7 +57,7 @@ public class Mafioso : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
             {
                 //Selecting the last sheriff (if there is more than one) 
                 //TODO: Make it such that the sheriff that is chosen is the sheriff that has the most amount of marks
@@ -74,6 +67,10 @@ public class Mafioso : Role, IRoleNightAction
 
         else
         {
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+            {
+                worldList.Add(possibleWorld);
+            };
             //Selecting a world at random
             var random = new Random();
             int index = random.Next(worldList.Count);
@@ -81,13 +78,17 @@ public class Mafioso : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }
 
             while (selectedPlayer == null)
             {
+                if (selectedPlayers.Count == 0)
+                {
+                    break;
+                }
                 var randomVil = new Random();
                 int indexVil = random.Next(selectedPlayers.Count);
 
