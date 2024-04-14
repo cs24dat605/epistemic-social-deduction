@@ -1,8 +1,6 @@
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 using SocialDeductionGame.Actions;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace SocialDeductionGame
 {
@@ -171,24 +169,24 @@ namespace SocialDeductionGame
                         // Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
                     }
 
-                    List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
+                    List<PossiblePlayer> playerList = new List<PossiblePlayer>();
                     if ( player.Role.IsTown)
                     {
-                        foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayers.Where(susplayer => susplayer.PossibleRole.IsTown == false))
+                        foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false))
                         {
-                            playerlist.Add(susplayer);
+                            playerList.Add(susPlayer);
                         }
                     }
                     else 
                     {
-                        foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayers.Where(susplayer => susplayer.PossibleRole.IsTown == true))
+                        foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true))
                         {
-                            playerlist.Add(susplayer);
+                            playerList.Add(susPlayer);
                         }
                     }
 
-                    index = random.Next(playerlist.Count);
-                    Player SelectedPlayer = playerlist[index].ActualPlayer;
+                    index = random.Next(playerList.Count);
+                    Player SelectedPlayer = playerList[index].ActualPlayer;
 
                     foreach (VotingPlayer votingPlayer in votingPlayers)
                     {
@@ -220,7 +218,7 @@ namespace SocialDeductionGame
             }
             else
             {
-                //Deicde how to handle this
+                // Decide how to handle this
             }
 
             Console.WriteLine("Marks");
