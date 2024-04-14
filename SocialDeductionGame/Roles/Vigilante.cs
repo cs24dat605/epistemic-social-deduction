@@ -9,7 +9,7 @@ public class Vigilante : Role, IRoleNightAction
     public Vigilante()
     {
         Name = "Vigilante";
-        IsOnVillagerTeam = true;
+        IsTown = true;
         forceAction = false;
     }
 
@@ -35,21 +35,21 @@ public class Vigilante : Role, IRoleNightAction
 
         //Finding max possibility world
         int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.PossibleScore > Max)
+            if (possibleWorld.Marks > Max)
             {
-                Max = possibleWorld.PossibleScore;
+                Max = possibleWorld.Marks;
             }
         };
 
         //Finding world with second highest possiblity
         int SecondMax = 0;
-        foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore < Max))
+        foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks < Max))
         {
-            if (possibleWorld.PossibleScore > SecondMax)
+            if (possibleWorld.Marks > SecondMax)
             {
-                SecondMax = possibleWorld.PossibleScore;
+                SecondMax = possibleWorld.Marks;
             }
         }
 
@@ -68,7 +68,7 @@ public class Vigilante : Role, IRoleNightAction
         }
 
         //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
                 worldList.Add(possibleWorld);
         };
@@ -86,8 +86,7 @@ public class Vigilante : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
             
-
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == false && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }

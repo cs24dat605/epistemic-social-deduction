@@ -172,7 +172,7 @@ namespace SocialDeductionGame
                     }
 
                     List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
-                    if ( player.Role.IsOnVillagerTeam)
+                    if ( player.Role.IsTown)
                     {
                         foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayers.Where(susplayer => susplayer.PossibleRole.IsTown == false))
                         {

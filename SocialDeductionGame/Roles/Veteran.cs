@@ -8,7 +8,7 @@ public class Veteran : Role, IRoleNightAction
     public Veteran()
     {
         Name = "Veteran";
-        IsOnVillagerTeam = true;
+        IsTown = true;
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
@@ -22,16 +22,16 @@ public class Veteran : Role, IRoleNightAction
 
         //Finding max possibility world
         int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.PossibleScore > Max)
+            if (possibleWorld.Marks > Max)
             {
-                Max = possibleWorld.PossibleScore;
+                Max = possibleWorld.Marks;
             }
         };
 
         //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
                 worldList.Add(possibleWorld);
         };
@@ -44,9 +44,9 @@ public class Veteran : Role, IRoleNightAction
 
         int playersAlive = 0;
         int mafiaAlive = 0;
-        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.IsAlive == true))
+        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.IsAlive == true))
         {
-            if(p.PossibleRole.IsOnVillagerTeam == false)
+            if(p.PossibleRole.IsTown == false)
             {
                 mafiaAlive++;
             }
@@ -59,7 +59,7 @@ public class Veteran : Role, IRoleNightAction
         //Either when the random odds for him to get selected get "sufficiently high"
         //That is currently set as when the amount of players is less than or equal to the amount of mafia times 2
         //Or when the world that the Veteran belives most in, is a world where he is a sheriff.
-        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer) 
+        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers) 
         { 
             if(p.ActualPlayer.Name == player.Name && p.PossibleRole.Name == "Sheriff")
             {
