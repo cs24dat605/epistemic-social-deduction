@@ -9,9 +9,15 @@ public static class WorldManager
     {
         var counts = new Dictionary<Role, int>
         {
-            { new Villager(), Game.Instance.GameConfig.Villagers },
-            { new Seer(), Game.Instance.GameConfig.Seers },
-            { new Werewolf(), Game.Instance.GameConfig.Werewolves }
+            { new Villager(), Game.Instance.GameConfig.Villagers }, 
+            { new Sheriff(), Game.Instance.GameConfig.Sheriffs },
+            { new Escort(), Game.Instance.GameConfig.Escort },
+            { new Vigilante(), Game.Instance.GameConfig.Vigilante },
+            { new Veteran(), Game.Instance.GameConfig.Veteran },
+            { new Godfather(), Game.Instance.GameConfig.Godfather },
+            { new Mafioso(), Game.Instance.GameConfig.Mafioso },
+            { new Consort(), Game.Instance.GameConfig.Consort },
+            { new Consigliere(), Game.Instance.GameConfig.Consigliere}
         };
 
         return GenerateArraysBruteForce(counts);
