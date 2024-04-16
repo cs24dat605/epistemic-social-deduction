@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
 using SocialDeductionGame.Communication;
+using SocialDeductionGame.Roles;
 
 namespace SocialDeductionGame.Worlds;
 
 public class World
 {
+    
     public List<PossiblePlayer> PossiblePlayers { get; set; }
     public bool IsActive = true;
     public int Marks = 0;
@@ -13,20 +16,9 @@ public class World
     {
         PossiblePlayers = players;
     }
-
-    public void PrintPossible()
-    {
-        foreach (var player in this.PossiblePlayers)
-        {
-            Console.Write(player.PossibleRole.Name + " ");
-        }
-    }
     
-    public void PrintActual()
+    // Needed for JSON Deserialization
+    public World()
     {
-        foreach (var player in this.PossiblePlayers)
-        {
-            Console.Write(player.ActualPlayer.Role.Name + " ");
-        }
     }
 }

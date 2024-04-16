@@ -43,9 +43,15 @@ namespace SocialDeductionGame
             }*/
             
             Players = CreatePlayers();
+
+            var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             
-            List<World> allWorlds = WorldManager.GenerateAllWorlds();
+            List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
+            Console.WriteLine($"Time taken to generate worlds: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
+
+            Console.WriteLine("Moving worlds to player");
             WorldManager.MoveWorldsToPlayers(allWorlds);
+            Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
             /*foreach (var world in allWorlds)
             {
@@ -60,6 +66,8 @@ namespace SocialDeductionGame
             // while (!GameFinished)
             for (var i = 0; i < 10; i++)
             {
+                Console.WriteLine($"Round: {i}");
+                
                 RunDayPhase();
                 RunNightPhase();
 
@@ -141,7 +149,7 @@ namespace SocialDeductionGame
             {
                 if (player.IsAlive)
                 {
-                    int MaxPossiblescore = 0;
+                    int MaxPossiblescore = Int32.MinValue;
 
                     //MaxPossible score
                     foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
@@ -152,6 +160,8 @@ namespace SocialDeductionGame
                         }
                     }
 
+                    Console.WriteLine($"ay: {MaxPossiblescore}");
+
                     //Generating a list of all equally most possible worlds
                     List<World> worldList = new List<World>();
                     foreach(World world in player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true))
@@ -161,7 +171,9 @@ namespace SocialDeductionGame
 
                     //Select at random which of the most likely worlds to choose
                     var random = new Random();
-                    int index = random.Next(worldList.Count);
+                    int index = random.Next(0, worldList.Count);
+
+                    Console.WriteLine($"WL: {worldList.Count}");
 
                     World SelectedWorld = worldList[index];
                     foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayers)
@@ -170,7 +182,7 @@ namespace SocialDeductionGame
                     }
 
                     List<PossiblePlayer> playerList = new List<PossiblePlayer>();
-                    if ( player.Role.IsTown)
+                    if (player.Role.IsTown)
                     {
                         foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false))
                         {
@@ -186,16 +198,17 @@ namespace SocialDeductionGame
                     }
 
                     index = random.Next(playerList.Count);
-                    Player SelectedPlayer = playerList[index].ActualPlayer;
+                    PossiblePlayer SelectedPlayer = playerList[index];
 
                     foreach (VotingPlayer votingPlayer in votingPlayers)
                     {
-                        if (votingPlayer.VotedPlayer == SelectedPlayer)
+                        if (votingPlayer.VotedPlayer == SelectedPlayer.ActualPlayer)
                         {
                             votingPlayer.Votes++;
                         }
                     }
-                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.Role.ToString() + "");
+                    
+                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 }
             }
 
@@ -221,11 +234,11 @@ namespace SocialDeductionGame
                 // Decide how to handle this
             }
 
-            Console.WriteLine("Marks");
-            foreach (World pWorlds in Players[0].PossibleWorlds)
-            {
-                Console.Write($" {pWorlds.Marks}");
-            }
+            // Console.WriteLine("Marks");
+            // foreach (World pWorlds in Players[0].PossibleWorlds)
+            // {
+            //     Console.Write($" {pWorlds.Marks}");
+            // }
         }
         
         private void RunNightPhase()

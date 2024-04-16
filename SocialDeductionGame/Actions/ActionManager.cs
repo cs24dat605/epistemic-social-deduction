@@ -194,19 +194,20 @@ public class ActionManager
                 }
             }
 
-            foreach (var x in players.Where(x => x.Role is Consigliere))
-            {
-                int active = 0;
-                int inactive = 0;
-                foreach (World world in x.PossibleWorlds)
-                {
-                    if (world.IsActive == true)
-                    {
-                        active++;
-                    }
-                    else inactive++;
-                }
-            }
+            // Not used?
+            // foreach (var x in players.Where(x => x.Role is Consigliere))
+            // {
+            //     int active = 0;
+            //     int inactive = 0;
+            //     foreach (World world in x.PossibleWorlds)
+            //     {
+            //         if (world.IsActive == true)
+            //         {
+            //             active++;
+            //         }
+            //         else inactive++;
+            //     }
+            // }
         }
 
 

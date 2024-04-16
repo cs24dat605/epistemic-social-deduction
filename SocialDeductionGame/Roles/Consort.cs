@@ -21,7 +21,7 @@ public class Consort : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = 0;
+        int Max = Int32.MinValue;
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
             if (possibleWorld.Marks > Max)

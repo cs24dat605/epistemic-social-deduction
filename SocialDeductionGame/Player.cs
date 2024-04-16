@@ -18,6 +18,15 @@ public class Player
         Role = role;
         IsAlive = true;
     }
+    
+    public Player(string name, bool isAlive, Role role)
+    {
+        Name = name;
+        IsAlive = isAlive;
+        Role = role;
+    }
+    
+    public Player() { } 
 
     public void Communicate()
     {

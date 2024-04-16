@@ -1,3 +1,4 @@
+using System.Text.Json;
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 
@@ -5,8 +6,35 @@ namespace SocialDeductionGame.Worlds;
 
 public static class WorldManager
 {
-    public static List<World> GenerateAllWorlds()
+    private static string worldFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "worlds.json"));
+    
+    public static List<World> LoadOrGenerateWorlds()
     {
+        if (File.Exists(worldFile))
+        {
+            Console.WriteLine("Loading generated worlds from file!");
+            
+            var options = new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } };
+            
+            List<World> worlds = new List<World>();
+
+            // Read the file line by line
+            foreach (string line in File.ReadLines(worldFile))
+            {
+                // Skip empty lines
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+            
+                // Deserialize the world from the line
+                World world = JsonSerializer.Deserialize<World>(line, options);
+                worlds.Add(world);
+            }
+            
+            return worlds;
+        }
+        
         var counts = new Dictionary<Role, int>
         {
             { new Villager(), Game.Instance.GameConfig.Villagers }, 
@@ -20,41 +48,56 @@ public static class WorldManager
             { new Consigliere(), Game.Instance.GameConfig.Consigliere}
         };
 
-        return GenerateArraysBruteForce(counts);
-    }
-
-    private static List<World> GenerateArraysBruteForce(Dictionary<Role, int> counts)
-    {
+        Console.WriteLine("No generated worlds file was found!");
+        Console.WriteLine("Generating worlds");
+        
         var numbers = counts.Keys.ToList();
-        var uniqueArrays = new List<World>();
+        List<World> allWorlds = new List<World>();
 
-        GenerateCombinations(new Role[Game.Instance.GameConfig.Players], 0, numbers, counts, uniqueArrays);
+        GenerateCombinations(new Role[Game.Instance.GameConfig.Players], 0, numbers, counts, allWorlds);
+        
+         // allWorlds = GenerateArraysBruteForce(counts);
+        
+        // File.WriteAllText(worldFile, JsonSerializer.Serialize(allWorlds));
 
-        return uniqueArrays;
+        return allWorlds;
     }
 
-    private static void GenerateCombinations(Role[] curArray, int i, List<Role> numbers, Dictionary<Role, int> counts,
-        List<World> uniqueArrays)
+    // private static List<World> GenerateArraysBruteForce(Dictionary<Role, int> counts)
+    // {
+    //     var numbers = counts.Keys.ToList();
+    //     var uniqueArrays = new List<World>();
+    //
+    //     GenerateCombinations(new Role[Game.Instance.GameConfig.Players], 0, numbers, counts, uniqueArrays);
+    //
+    //     return uniqueArrays;
+    // }
+
+    private static void GenerateCombinations(Role[] curArray, int i, List<Role> roleList, Dictionary<Role, int> counts, List<World> uniqueArrays)
     {
         if (i == curArray.Length)
         {
-            if (counts.Any(kvp => curArray.Count(num => num == kvp.Key) != kvp.Value)) return;
-
+            if (counts.Any(kvp => curArray.Count(role => role == kvp.Key) != kvp.Value))
+                return;
+                
             var world = new World(curArray.Select((role, playerIndex) =>
                 new PossiblePlayer(role, Game.Instance.Players.ElementAt(playerIndex))
             ).ToList());
             uniqueArrays.Add(world);
+            
+            var serializedWorld = JsonSerializer.Serialize(world, new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } });
+            File.AppendAllText(worldFile, serializedWorld + Environment.NewLine);
 
             return;
         }
 
-        foreach (var num in numbers)
+        foreach (var role in roleList)
         {
-            curArray[i] = num;
-            GenerateCombinations(curArray, i + 1, numbers, counts, uniqueArrays);
+            curArray[i] = role;
+            GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
         }
     }
-
+    
     public static void MoveWorldsToPlayers(List<World> worlds)
     {
         List<World> worldCopy = new List<World>(worlds);

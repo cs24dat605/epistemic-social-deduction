@@ -32,49 +32,46 @@ public class Vigilante : Role, IRoleNightAction
 
         //first
         List<World> worldList = new List<World>();
+        
+        var sortedWorlds = player.PossibleWorlds
+            .Where(world => world.IsActive)
+            .OrderByDescending(world => world.Marks) 
+            .ToList(); 
 
-        //Finding max possibility world
-        int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
-        {
-            if (possibleWorld.Marks > Max)
-            {
-                Max = possibleWorld.Marks;
-            }
-        };
-
-        //Finding world with second highest possiblity
-        int SecondMax = 0;
-        foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks < Max))
-        {
-            if (possibleWorld.Marks > SecondMax)
-            {
-                SecondMax = possibleWorld.Marks;
-            }
-        }
-
+        // //Finding max possibility world
+        // int Max = Int32.MinValue;
+        // foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        // {
+        //     if (possibleWorld.Marks > Max)
+        //     {
+        //         Max = possibleWorld.Marks;
+        //     }
+        // };
+        //
+        // //Finding world with second highest possiblity
+        // int SecondMax = 0;
+        // foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks < Max))
+        // {
+        //     if (possibleWorld.Marks > SecondMax)
+        //     {
+        //         SecondMax = possibleWorld.Marks;
+        //     }
+        // }
+        
         //Vigilante has to be certain on his action, as it can mean life or death
-        if (Max == SecondMax || Max == 0)
-        {
-            Console.WriteLine("The Vigilante sleeps tonight");
-            return;
-        }
         //How certain has the vigilante be for him to shoot?
         //2 indicates that he has to be twice as certain on these worlds than the rest.
-        if(Max < SecondMax * 2)
+        if (sortedWorlds[0].Marks == 0 || sortedWorlds[0].Marks == sortedWorlds[1].Marks || sortedWorlds[0].Marks < sortedWorlds[1].Marks * 2)
         {
             Console.WriteLine("The Vigilante sleeps tonight");
             return;
         }
-
-        //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
-        {
-                worldList.Add(possibleWorld);
-        };
+        
+        worldList = player.PossibleWorlds
+            .Where(possibleWorld => possibleWorld.IsActive && possibleWorld.Marks == sortedWorlds[0].Marks)
+            .ToList(); // Materialize the list
 
         PossiblePlayer selectedPlayer = null;
-
 
         //Selecting a world at random from list
         bool candidatesFound = false;

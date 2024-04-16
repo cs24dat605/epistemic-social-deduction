@@ -16,9 +16,12 @@ public class CommunicationManager
         
         // TODO if player has explicit knowledge maybe leverage it?
         
-        List<PossiblePlayer> players = new List<PossiblePlayer>(player.PossibleWorlds[0].PossiblePlayers);
-        players.Remove(inquirePlayer);
-        players = players.Where(x => x.Name != player.Name).ToList(); 
+        // List<PossiblePlayer> players = new List<PossiblePlayer>(player.PossibleWorlds[0].PossiblePlayers);
+        // players.Remove(inquirePlayer);
+        // players = players.Where(x => x.Name != player.Name).ToList(); 
+        List<PossiblePlayer> players = player.PossibleWorlds[0].PossiblePlayers
+            .Where(x => x != inquirePlayer && x.Name != player.Name)
+            .ToList();
         
         Random random = new Random();
         Message question = CommunicationTemplates.Messages[random.Next(0, CommunicationTemplates.Messages.Count)];
