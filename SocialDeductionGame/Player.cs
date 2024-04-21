@@ -1,6 +1,7 @@
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
+using Newtonsoft.Json;
 
 namespace SocialDeductionGame;
 
@@ -8,6 +9,8 @@ public class Player
 {
     public string Name { get; }
     public bool IsAlive { get; set; }
+    
+    // [JsonConverter(typeof(RoleConverter))]
     public Role Role { get; }
 
     public List<World> PossibleWorlds;
@@ -18,15 +21,6 @@ public class Player
         Role = role;
         IsAlive = true;
     }
-    
-    public Player(string name, bool isAlive, Role role)
-    {
-        Name = name;
-        IsAlive = isAlive;
-        Role = role;
-    }
-    
-    public Player() { } 
 
     public void Communicate()
     {

@@ -22,7 +22,7 @@ public class CommunicationManager
         List<PossiblePlayer> players = player.PossibleWorlds[0].PossiblePlayers
             .Where(x => x != inquirePlayer && x.Name != player.Name)
             .ToList();
-        
+
         Random random = new Random();
         Message question = CommunicationTemplates.Messages[random.Next(0, CommunicationTemplates.Messages.Count)];
         
@@ -30,6 +30,8 @@ public class CommunicationManager
         question.Accused = inquirePlayer;
         question.PlayerAsk = players[random.Next(0, players.Count)];
         question.Role = inquirePlayer.PossibleRole;
+
+        Console.WriteLine($"{player.Name}, {inquirePlayer.Name}, {question.PlayerAsk.Name}, {question.Role.Name}");
 
         Console.WriteLine($"Communication: {question.GenerateText()}");
 

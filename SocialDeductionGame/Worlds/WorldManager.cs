@@ -1,6 +1,6 @@
-using System.Text.Json;
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
+using Newtonsoft.Json;
 
 namespace SocialDeductionGame.Worlds;
 
@@ -14,8 +14,6 @@ public static class WorldManager
         {
             Console.WriteLine("Loading generated worlds from file!");
             
-            var options = new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } };
-            
             List<World> worlds = new List<World>();
 
             // Read the file line by line
@@ -27,9 +25,11 @@ public static class WorldManager
                     continue;
                 }
             
-                // Deserialize the world from the line
-                World world = JsonSerializer.Deserialize<World>(line, options);
-                worlds.Add(world);
+                // Read JSON string from file
+                // Deserialize back into an object
+                World world = JsonConvert.DeserializeObject<World>(line, new PossiblePlayerConverter());
+                
+                worlds.Add(world); 
             }
             
             return worlds;
@@ -63,16 +63,6 @@ public static class WorldManager
         return allWorlds;
     }
 
-    // private static List<World> GenerateArraysBruteForce(Dictionary<Role, int> counts)
-    // {
-    //     var numbers = counts.Keys.ToList();
-    //     var uniqueArrays = new List<World>();
-    //
-    //     GenerateCombinations(new Role[Game.Instance.GameConfig.Players], 0, numbers, counts, uniqueArrays);
-    //
-    //     return uniqueArrays;
-    // }
-
     private static void GenerateCombinations(Role[] curArray, int i, List<Role> roleList, Dictionary<Role, int> counts, List<World> uniqueArrays)
     {
         if (i == curArray.Length)
@@ -85,7 +75,8 @@ public static class WorldManager
             ).ToList());
             uniqueArrays.Add(world);
             
-            var serializedWorld = JsonSerializer.Serialize(world, new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } });
+            // var serializedWorld = JsonSerializer.Serialize(world, new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } });
+            var serializedWorld = JsonConvert.SerializeObject(world, new PossiblePlayerConverter());
             File.AppendAllText(worldFile, serializedWorld + Environment.NewLine);
 
             return;

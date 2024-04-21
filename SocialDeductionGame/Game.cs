@@ -81,7 +81,7 @@ namespace SocialDeductionGame
             Console.WriteLine("Creating Players");
             
             List<Player> playerList = new List<Player>();
-            List<Role> availableRoles = GetRoles();
+            List<Role> availableRoles = GameConfig.GetRoleCounts();
 
             for (int i = 0; i < GameConfig.Players; i++)
             {
@@ -99,23 +99,6 @@ namespace SocialDeductionGame
 
             // Console.WriteLine(playerList);
             return playerList;
-        }
-
-        private List<Role> GetRoles()
-        {
-            var availableRoles = new List<Role>();
-            
-            availableRoles.AddRange(Enumerable.Repeat(new Villager(), GameConfig.Villagers));
-            availableRoles.AddRange(Enumerable.Repeat(new Consigliere(), GameConfig.Consigliere));
-            availableRoles.AddRange(Enumerable.Repeat(new Godfather(), GameConfig.Godfather));
-            availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), GameConfig.Mafioso));
-            availableRoles.AddRange(Enumerable.Repeat(new Consort(), GameConfig.Consort));
-            availableRoles.AddRange(Enumerable.Repeat(new Escort(), GameConfig.Consort));
-            availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), GameConfig.Sheriffs));
-            availableRoles.AddRange(Enumerable.Repeat(new Vigilante(), GameConfig.Vigilante));
-            availableRoles.AddRange(Enumerable.Repeat(new Veteran(), GameConfig.Veteran));
-
-            return availableRoles;
         }
 
         private void RunDayPhase()
