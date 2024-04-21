@@ -113,18 +113,20 @@ public static class WorldManager
                 {
                     // TODO maybe implement that this on is acccused instead in the message
                     if (type == 0)
-                        if (pPlayer.Name != message.Accuser.Name)
+                        if (pPlayer.ActualPlayer != message.Accuser)
                             continue;
 
                     if (type is 1 or 2 or 3)
-                        if (pPlayer.Name != message.Accused.Name)
+                        if (pPlayer != message.Accused)
                             continue;
-                    
-                    bool isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
 
+                    bool isCorrect;
+                    
                     // Flip statement by marking the opposite roles
                     if (type == 3 || message.Response == "No")
                         isCorrect = pPlayer.PossibleRole.Name != message.Role.Name;
+                    else
+                        isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
                     if (isCorrect)
                         pWorld.Marks++;

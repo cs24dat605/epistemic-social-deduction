@@ -32,11 +32,6 @@ public static class LogicManager
             unknownPlayerCopy = new List<PossiblePlayer>(targetWorld.PossiblePlayers);
         }
 
-        foreach (var pPlayer in targetWorld.PossiblePlayers)   
-        {
-            Console.WriteLine($"a123y: {pPlayer.Name}");
-        }
-
         Random random = new Random();
         return unknownPlayerCopy[random.Next(0, unknownPlayerCopy.Count)];
     }

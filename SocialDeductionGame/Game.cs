@@ -13,6 +13,8 @@ namespace SocialDeductionGame
         private static Game _instance;
         private bool _gameFinished = false;
 
+        private long startTime = 0;
+
         public static Game Instance 
         {
             get 
@@ -53,27 +55,37 @@ namespace SocialDeductionGame
             WorldManager.MoveWorldsToPlayers(allWorlds);
             Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
-            /*foreach (var world in allWorlds)
+            startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            int i = 0;
+            
+            while (!_gameFinished)
             {
-                Console.Write("Possible: ");
-                world.PrintPossible();
-                Console.Write("\nActual: ");
-                world.PrintActual();
-
-                Console.WriteLine("\n");
-            }*/
-                
-            // while (!GameFinished)
-            for (var i = 0; i < 10; i++)
-            {
-                Console.WriteLine($"Round: {i}");
+                Console.WriteLine($"Round: {i++}");
                 
                 RunDayPhase();
                 RunNightPhase();
+                
+                CheckIfFinished();
 
                 if (_gameFinished)
+                {
+                    Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
                     break;
+                }
             }
+        }
+        
+        private void CheckIfFinished()
+        {
+            bool townWins = !Players.Any(p => p.IsAlive && !p.Role.IsTown);
+            bool mafiaWins = Players.Count(p => p.IsAlive && !p.Role.IsTown) >= Players.Count(p => p.IsAlive && p.Role.IsTown);
+
+            if (townWins)
+                Console.WriteLine("Town wins!");
+            else if (mafiaWins)
+                Console.WriteLine("Mafia wins!");
+
+            _gameFinished = townWins || mafiaWins;
         }
 
         private List<Player> CreatePlayers()
@@ -143,8 +155,6 @@ namespace SocialDeductionGame
                         }
                     }
 
-                    Console.WriteLine($"ay: {MaxPossiblescore}");
-
                     //Generating a list of all equally most possible worlds
                     List<World> worldList = new List<World>();
                     foreach(World world in player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true))
@@ -156,13 +166,7 @@ namespace SocialDeductionGame
                     var random = new Random();
                     int index = random.Next(0, worldList.Count);
 
-                    Console.WriteLine($"WL: {worldList.Count}");
-
                     World SelectedWorld = worldList[index];
-                    foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayers)
-                    {
-                        // Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
-                    }
 
                     List<PossiblePlayer> playerList = new List<PossiblePlayer>();
                     if (player.Role.IsTown)
