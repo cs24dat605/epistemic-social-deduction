@@ -1,8 +1,6 @@
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 using SocialDeductionGame.Actions;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace SocialDeductionGame
 {
@@ -14,6 +12,8 @@ namespace SocialDeductionGame
         
         private static Game _instance;
         private bool _gameFinished = false;
+
+        private long startTime = 0;
 
         public static Game Instance 
         {
@@ -45,29 +45,47 @@ namespace SocialDeductionGame
             }*/
             
             Players = CreatePlayers();
+
+            var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             
-            List<World> allWorlds = WorldManager.GenerateAllWorlds();
+            List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
+            Console.WriteLine($"Time taken to generate worlds: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
+
+            Console.WriteLine("Moving worlds to player");
             WorldManager.MoveWorldsToPlayers(allWorlds);
+            Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
-            /*foreach (var world in allWorlds)
+            startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            int i = 0;
+            
+            while (!_gameFinished)
             {
-                Console.Write("Possible: ");
-                world.PrintPossible();
-                Console.Write("\nActual: ");
-                world.PrintActual();
-
-                Console.WriteLine("\n");
-            }*/
+                Console.WriteLine($"Round: {i++}");
                 
-            // while (!GameFinished)
-            for (var i = 0; i < 10; i++)
-            {
                 RunDayPhase();
                 RunNightPhase();
+                
+                CheckIfFinished();
 
                 if (_gameFinished)
+                {
+                    Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
                     break;
+                }
             }
+        }
+        
+        private void CheckIfFinished()
+        {
+            bool townWins = !Players.Any(p => p.IsAlive && !p.Role.IsTown);
+            bool mafiaWins = Players.Count(p => p.IsAlive && !p.Role.IsTown) >= Players.Count(p => p.IsAlive && p.Role.IsTown);
+
+            if (townWins)
+                Console.WriteLine("Town wins!");
+            else if (mafiaWins)
+                Console.WriteLine("Mafia wins!");
+
+            _gameFinished = townWins || mafiaWins;
         }
 
         private List<Player> CreatePlayers()
@@ -75,7 +93,7 @@ namespace SocialDeductionGame
             Console.WriteLine("Creating Players");
             
             List<Player> playerList = new List<Player>();
-            List<Role> availableRoles = GetRoles();
+            List<Role> availableRoles = GameConfig.GetRoleCounts();
 
             for (int i = 0; i < GameConfig.Players; i++)
             {
@@ -95,29 +113,12 @@ namespace SocialDeductionGame
             return playerList;
         }
 
-        private List<Role> GetRoles()
-        {
-            var availableRoles = new List<Role>();
-            
-            availableRoles.AddRange(Enumerable.Repeat(new Villager(), GameConfig.Villagers));
-            availableRoles.AddRange(Enumerable.Repeat(new Consigliere(), GameConfig.Consigliere));
-            availableRoles.AddRange(Enumerable.Repeat(new Godfather(), GameConfig.Godfather));
-            availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), GameConfig.Mafioso));
-            availableRoles.AddRange(Enumerable.Repeat(new Consort(), GameConfig.Consort));
-            availableRoles.AddRange(Enumerable.Repeat(new Escort(), GameConfig.Consort));
-            availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), GameConfig.Sheriffs));
-            availableRoles.AddRange(Enumerable.Repeat(new Vigilante(), GameConfig.Vigilante));
-            availableRoles.AddRange(Enumerable.Repeat(new Veteran(), GameConfig.Veteran));
-
-            return availableRoles;
-        }
-
         private void RunDayPhase()
         {
             Console.WriteLine("Day Phase");
             
             // Preform day action before voting might need changing?
-            foreach (Player player in Players.Where(player => player.IsAlive == true))
+            foreach (Player player in Players.Where(player => player.IsAlive))
             {
                 if (player is {Role: IRoleDayAction dayAction})
                 {
@@ -125,6 +126,13 @@ namespace SocialDeductionGame
                 }
             }
 
+            foreach (Player player in Players.Where(player => player.IsAlive))
+            {
+                player.Communicate();
+            }
+
+            
+            
             // Voting stuff
             List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
             foreach (Player player in Players.Where (player => player.IsAlive == true))
@@ -136,61 +144,58 @@ namespace SocialDeductionGame
             {
                 if (player.IsAlive)
                 {
-                    int MaxPossiblescore = 0;
+                    int MaxPossiblescore = Int32.MinValue;
 
                     //MaxPossible score
-                    foreach (World world in player.PossibleWorlds.Where(world => world.isActive == true))
+                    foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
                     {
-                        if(MaxPossiblescore < world.PossibleScore)
+                        if(MaxPossiblescore < world.Marks)
                         {
-                            MaxPossiblescore = world.PossibleScore;
+                            MaxPossiblescore = world.Marks;
                         }
                     }
 
                     //Generating a list of all equally most possible worlds
                     List<World> worldList = new List<World>();
-                    foreach(World world in player.PossibleWorlds.Where(world => world.PossibleScore == MaxPossiblescore && world.isActive == true))
+                    foreach(World world in player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true))
                     {
                         worldList.Add(world);
                     }
 
                     //Select at random which of the most likely worlds to choose
                     var random = new Random();
-                    int index = random.Next(worldList.Count);
+                    int index = random.Next(0, worldList.Count);
 
                     World SelectedWorld = worldList[index];
-                    foreach (PossiblePlayer player1 in SelectedWorld.PossiblePlayer)
-                    {
-                        //Console.WriteLine(player1.ActualPlayer.Name + " " + player1.PossibleRole);
-                    }
 
-                    List<PossiblePlayer> playerlist = new List<PossiblePlayer>();
-                    if ( player.Role.IsOnVillagerTeam)
+                    List<PossiblePlayer> playerList = new List<PossiblePlayer>();
+                    if (player.Role.IsTown)
                     {
-                        foreach (PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == false))
+                        foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false))
                         {
-                            playerlist.Add(susplayer);
+                            playerList.Add(susPlayer);
                         }
                     }
                     else 
                     {
-                        foreach(PossiblePlayer susplayer in SelectedWorld.PossiblePlayer.Where(susplayer => susplayer.PossibleRole.IsOnVillagerTeam == true))
+                        foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true))
                         {
-                            playerlist.Add(susplayer);
+                            playerList.Add(susPlayer);
                         }
                     }
 
-                    index = random.Next(playerlist.Count);
-                    Player SelectedPlayer = playerlist[index].ActualPlayer;
+                    index = random.Next(playerList.Count);
+                    PossiblePlayer SelectedPlayer = playerList[index];
 
                     foreach (VotingPlayer votingPlayer in votingPlayers)
                     {
-                        if (votingPlayer.VotedPlayer == SelectedPlayer)
+                        if (votingPlayer.VotedPlayer == SelectedPlayer.ActualPlayer)
                         {
                             votingPlayer.Votes++;
                         }
                     }
-                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.Role.ToString() + "");
+                    
+                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 }
             }
 
@@ -198,7 +203,7 @@ namespace SocialDeductionGame
             int MaxVotes = 0;
             foreach (VotingPlayer votedPlayer in votingPlayers)
             {
-                Console.WriteLine(votedPlayer.VotedPlayer.Name + " " + votedPlayer.Votes.ToString());
+                // Console.WriteLine(votedPlayer.VotedPlayer.Name + " " + votedPlayer.Votes.ToString());
                 if (MaxVotes < votedPlayer.Votes)
                 {
                    MaxVotes = votedPlayer.Votes;
@@ -213,12 +218,14 @@ namespace SocialDeductionGame
             }
             else
             {
-                //Deicde how to handle this
+                // Decide how to handle this
             }
 
-
-
-
+            // Console.WriteLine("Marks");
+            // foreach (World pWorlds in Players[0].PossibleWorlds)
+            // {
+            //     Console.Write($" {pWorlds.Marks}");
+            // }
         }
         
         private void RunNightPhase()

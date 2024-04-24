@@ -1,5 +1,6 @@
-namespace SocialDeductionGame;
+namespace SocialDeductionGame.Roles;
 using SocialDeductionGame.Actions;
+
 public interface IRoleNightAction
 {
     void PerformNightAction(Player player, List<Action> actions);

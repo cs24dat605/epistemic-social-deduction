@@ -1,11 +1,12 @@
+using System.Security.Cryptography;
+
 namespace SocialDeductionGame.Roles;
 
 public class Villager : Role
 {
-    public Villager() 
+    public Villager()
     {
         Name = "Villager";
-        IsOnVillagerTeam = true;
+        IsTown = true;
     }
-    
 }

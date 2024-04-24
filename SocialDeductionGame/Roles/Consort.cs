@@ -8,7 +8,7 @@ public class Consort : Role, IRoleNightAction
     public Consort() 
     {
         Name = "Consort";
-        IsOnVillagerTeam = false;
+        IsTown = false;
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
@@ -21,20 +21,20 @@ public class Consort : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
+        int Max = Int32.MinValue;
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.PossibleScore > Max)
+            if (possibleWorld.Marks > Max)
             {
-                Max = possibleWorld.PossibleScore;
+                Max = possibleWorld.Marks;
             }
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
             {
                 sheriffAlive = true;
             }
@@ -49,7 +49,7 @@ public class Consort : Role, IRoleNightAction
         //If the sheriff is dead
         if (worldList.Count == 0)
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
             {
                 worldList.Add(possibleWorld);
             };
@@ -60,7 +60,7 @@ public class Consort : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
             {
                 //Selecting the last sheriff (if there is more than one) 
                 //TODO: Make it such that the sheriff that is chosen is the sheriff that has the most amount of marks
@@ -78,7 +78,7 @@ public class Consort : Role, IRoleNightAction
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
             //Targeting a random villager, except the escort, as escort cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.PossibleRole is not Escort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.PossibleRole is not Escort && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }

@@ -48,7 +48,7 @@ public class ActionManager
             {
                 foreach (World world in player.PossibleWorlds)
                 {
-                    world.PossiblePlayer[targetIndex].IsAlive = false;
+                    world.PossiblePlayers[targetIndex].IsAlive = false;
                 }
             }
             players[targetIndex].IsAlive = false;
@@ -136,11 +136,11 @@ public class ActionManager
             {
                 if (e.player.Name == players[x].Name) //Double checking
                 {
-                    foreach (var y in players[x].PossibleWorlds.Where(y => y.isActive != false))
+                    foreach (var y in players[x].PossibleWorlds.Where(y => y.IsActive != false))
                     {
-                        if (y.PossiblePlayer[targetIndex].PossibleRole.IsOnVillagerTeam != players[targetIndex].Role.IsOnVillagerTeam)
+                        if (y.PossiblePlayers[targetIndex].PossibleRole.IsTown != players[targetIndex].Role.IsTown)
                         {
-                            y.isActive = false;
+                            y.IsActive = false;
 
                             // TODO: Here it should also update the belifes of the investigator
                         }
@@ -182,11 +182,11 @@ public class ActionManager
             {
                 if (e.player.Name == players[x].Name) //double checking
                 {
-                    foreach (var y in players[x].PossibleWorlds.Where(y => y.isActive != false))
+                    foreach (var y in players[x].PossibleWorlds.Where(y => y.IsActive != false))
                     {
-                        if (y.PossiblePlayer[targetIndex].PossibleRole.Name != players[targetIndex].Role.Name)
+                        if (y.PossiblePlayers[targetIndex].PossibleRole.Name != players[targetIndex].Role.Name)
                         {
-                            y.isActive = false;
+                            y.IsActive = false;
 
                             // TODO: Here it should also update the belifes of the investigator
                         }
@@ -194,19 +194,20 @@ public class ActionManager
                 }
             }
 
-            foreach (var x in players.Where(x => x.Role is Consigliere))
-            {
-                int active = 0;
-                int inactive = 0;
-                foreach (World world in x.PossibleWorlds)
-                {
-                    if (world.isActive == true)
-                    {
-                        active++;
-                    }
-                    else inactive++;
-                }
-            }
+            // Not used?
+            // foreach (var x in players.Where(x => x.Role is Consigliere))
+            // {
+            //     int active = 0;
+            //     int inactive = 0;
+            //     foreach (World world in x.PossibleWorlds)
+            //     {
+            //         if (world.IsActive == true)
+            //         {
+            //             active++;
+            //         }
+            //         else inactive++;
+            //     }
+            // }
         }
 
 
@@ -294,7 +295,7 @@ public class ActionManager
             {
                 foreach (World world in player.PossibleWorlds)
                 {
-                    world.PossiblePlayer[targetIndex].IsAlive = false;
+                    world.PossiblePlayers[targetIndex].IsAlive = false;
                 }
             }
             players[targetIndex].IsAlive = false;
@@ -336,7 +337,7 @@ public class ActionManager
             {
                 foreach (World world in player.PossibleWorlds)
                 {
-                    world.PossiblePlayer[targetIndex].IsAlive = false;
+                    world.PossiblePlayers[targetIndex].IsAlive = false;
                 }
             }
             players[targetIndex].IsAlive = false;
@@ -367,7 +368,7 @@ public class ActionManager
                 if (player.Name == actions[killerIndex].target.Name)
                 {
                     targetIndex = ii;
-                    if (player.Role.IsOnVillagerTeam == true)
+                    if (player.Role.IsTown == true)
                     {
                         missFireByVigilante = true;
                         player.Role.forceAction = true;
@@ -383,7 +384,7 @@ public class ActionManager
             {
                 foreach (World world in player.PossibleWorlds)
                 {
-                    world.PossiblePlayer[targetIndex].IsAlive = false;
+                    world.PossiblePlayers[targetIndex].IsAlive = false;
                 }
             }
             players[targetIndex].IsAlive = false;
@@ -412,7 +413,7 @@ public class ActionManager
                 {
                     foreach (World world in player.PossibleWorlds)
                     {
-                        world.PossiblePlayer[targetIndex].IsAlive = false;
+                        world.PossiblePlayers[targetIndex].IsAlive = false;
                     }
                 }
                 players[targetIndex].IsAlive = false;

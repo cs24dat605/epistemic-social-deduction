@@ -7,7 +7,7 @@ public class Escort : Role, IRoleNightAction
     public Escort() 
     {
         Name = "Escort";
-        IsOnVillagerTeam = true;
+        IsTown = true;
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
@@ -19,17 +19,17 @@ public class Escort : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
+        int Max = Int32.MinValue;
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.PossibleScore > Max)
+            if (possibleWorld.Marks > Max)
             {
-                Max = possibleWorld.PossibleScore;
+                Max = possibleWorld.Marks;
             }
         };
 
         //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
             worldList.Add(possibleWorld);
         };
@@ -49,7 +49,7 @@ public class Escort : Role, IRoleNightAction
             
 
             //not targetting consorts, as they cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == false && p.PossibleRole is not Consort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.PossibleRole is not Consort && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }

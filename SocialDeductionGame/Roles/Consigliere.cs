@@ -8,7 +8,7 @@ public class Consigliere : Role, IRoleNightAction
     public Consigliere()
     {
         Name = "Consigliere";
-        IsOnVillagerTeam = false;
+        IsTown = false;
         checkedPlayers = new List<string>();
     }
 
@@ -22,21 +22,21 @@ public class Consigliere : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = 0;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true))
+        int Max = Int32.MinValue;
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.PossibleScore > Max)
+            if (possibleWorld.Marks > Max)
             {
-                Max = possibleWorld.PossibleScore;
+                Max = possibleWorld.Marks;
             }
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
 
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayer.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
             {
                 if (!player.Role.checkedPlayers.Contains(possiblePlayer.ActualPlayer.Name)) { sheriffAlive = true; }
             }
@@ -58,7 +58,7 @@ public class Consigliere : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
             {
                 //Selecting the last sheriff (if there is more than one) 
                 //TODO: Make it such that the sheriff that is chosen is the sheriff that has the most amount of marks
@@ -68,7 +68,7 @@ public class Consigliere : Role, IRoleNightAction
 
         else
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.isActive == true && possibleWorld.PossibleScore == Max))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
             {
                 worldList.Add(possibleWorld);
             };
@@ -79,7 +79,7 @@ public class Consigliere : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayer.Where(p => p.PossibleRole.IsOnVillagerTeam == true && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
             }

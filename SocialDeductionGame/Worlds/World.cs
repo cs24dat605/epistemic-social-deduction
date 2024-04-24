@@ -1,30 +1,24 @@
+using Newtonsoft.Json;
+using SocialDeductionGame.Communication;
+
 namespace SocialDeductionGame.Worlds;
 
 public class World
 {
-    public List<PossiblePlayer> PossiblePlayer { get; set; }
-    public int PossibleScore = 0;
-    public bool isActive = true;
-    public List<Accusations> Accusations = new List<Accusations>();
+    
+    public List<PossiblePlayer> PossiblePlayers { get; set; }
+    
+    [JsonIgnore]
+    public bool IsActive { get; set; }
+    [JsonIgnore]
+    public int Marks { get; set; }
+    [JsonIgnore]
+    public List<Message> Accusations = new List<Message>();
     
     public World(List<PossiblePlayer> players)
     {
-        PossiblePlayer = players;
-    }
-
-    public void PrintPossible()
-    {
-        foreach (var player in this.PossiblePlayer)
-        {
-            Console.Write(player.PossibleRole.Name + " ");
-        }
-    }
-    
-    public void PrintActual()
-    {
-        foreach (var player in this.PossiblePlayer)
-        {
-            Console.Write(player.ActualPlayer.Role.Name + " ");
-        }
+        PossiblePlayers = players;
+        IsActive = true;
+        Marks = 0;
     }
 }
