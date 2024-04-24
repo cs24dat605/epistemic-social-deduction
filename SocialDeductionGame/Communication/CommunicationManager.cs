@@ -31,8 +31,6 @@ public class CommunicationManager
         question.PlayerAsk = players[random.Next(0, players.Count)];
         question.Role = inquirePlayer.PossibleRole;
 
-        Console.WriteLine($"{player.Name}, {inquirePlayer.Name}, {question.PlayerAsk.Name}, {question.Role.Name}");
-
         Console.WriteLine($"Communication: {question.GenerateText()}");
 
         if (question.Responses != null && question.Responses.Count > 0)

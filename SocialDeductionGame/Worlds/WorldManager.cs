@@ -17,20 +17,41 @@ public static class WorldManager
             List<World> worlds = new List<World>();
 
             // Read the file line by line
-            foreach (string line in File.ReadLines(worldFile))
+            // foreach (string line in File.ReadLines(worldFile))
+            // {
+            //     // Skip empty lines
+            //     if (string.IsNullOrWhiteSpace(line))
+            //     {
+            //         continue;
+            //     }
+            //
+            //     // Read JSON string from file
+            //     // Deserialize back into an object
+            //     World world = JsonConvert.DeserializeObject<World>(line, new PossiblePlayerConverter());
+            //     
+            //     worlds.Add(world); 
+            // }
+            var lines = File.ReadLines(worldFile); // Read all lines once
+
+            Parallel.ForEach(lines, line =>
             {
                 // Skip empty lines
                 if (string.IsNullOrWhiteSpace(line))
                 {
-                    continue;
+                    return;  // Skip to the next iteration
                 }
-            
+
                 // Read JSON string from file
                 // Deserialize back into an object
                 World world = JsonConvert.DeserializeObject<World>(line, new PossiblePlayerConverter());
-                
-                worlds.Add(world); 
-            }
+
+                // Since worlds.Add is not thread-safe, use a lock to protect it
+                lock (worlds) 
+                {
+                    worlds.Add(world); 
+                }
+            });
+
             
             return worlds;
         }
@@ -75,7 +96,6 @@ public static class WorldManager
             ).ToList());
             uniqueArrays.Add(world);
             
-            // var serializedWorld = JsonSerializer.Serialize(world, new JsonSerializerOptions { IncludeFields = true, Converters = { new WorldConverter() } });
             var serializedWorld = JsonConvert.SerializeObject(world, new PossiblePlayerConverter());
             File.AppendAllText(worldFile, serializedWorld + Environment.NewLine);
 
@@ -95,6 +115,25 @@ public static class WorldManager
         foreach (var player in Game.Instance.Players)
         {
             player.PossibleWorlds = new List<World>(worldCopy);
+            // player.PossibleWorlds = new List<World>(worldCopy.Select(world =>
+            // {
+            //     // Create a deep copy of the world
+            //     World worldCopyForPlayer = new World(new List<PossiblePlayer>(world.PossiblePlayers))
+            //     {
+            //         IsActive = world.IsActive,
+            //         Marks = world.Marks,
+            //         Accusations = new List<Message>(world.Accusations)
+            //     };
+            //
+            //     if (worldCopyForPlayer.PossiblePlayers[player.ID].PossibleRole.Name != player.Role.Name)
+            //     {
+            //         worldCopyForPlayer.IsActive = false;
+            //     }
+            //
+            //     return worldCopyForPlayer;
+            // }).ToList());
+            //
+            // Console.WriteLine($"{player.PossibleWorlds.Select(world => world.IsActive).ToList().Count}:{player.PossibleWorlds.Select(world => world.IsActive == false).ToList().Count}");
         }
     }
 
