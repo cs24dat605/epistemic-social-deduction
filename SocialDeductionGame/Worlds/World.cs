@@ -12,8 +12,6 @@ public class World
     public bool IsActive { get; set; }
     [JsonIgnore]
     public int Marks { get; set; }
-    [JsonIgnore]
-    public List<Message> Accusations = new List<Message>();
     
     public World(List<PossiblePlayer> players)
     {

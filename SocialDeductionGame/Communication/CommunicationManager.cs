@@ -7,31 +7,48 @@ public class CommunicationManager
 {
     public void Communicate(Player player)
     {
-        // TODO change depending on if is town or mafia
-        PossiblePlayer inquirePlayer = LogicManager.GetHighestInformationGainPlayer(player.PossibleWorlds);
+        // Probability check if player should communicate
+        if (!ProbabilityManager.ShouldEventOccur("Communicate"))
+        {
+            Console.WriteLine($"Comm: {player.Name} decided not to communicate");
+            return;
+        }
+        
+        List<World> possibleWorlds = player.PossibleWorlds;
+        
+        int numWorlds = (int)Math.Ceiling(possibleWorlds.Count * 0.01);
 
-        // TODO maybe ask contradiction information here
-        // TODO maybe choose specific question later
-        
-        
-        // TODO if player has explicit knowledge maybe leverage it?
-        
-        // List<PossiblePlayer> players = new List<PossiblePlayer>(player.PossibleWorlds[0].PossiblePlayers);
-        // players.Remove(inquirePlayer);
-        // players = players.Where(x => x.Name != player.Name).ToList(); 
-        List<PossiblePlayer> players = player.PossibleWorlds[0].PossiblePlayers
-            .Where(x => x != inquirePlayer && x.Name != player.Name)
+        // Sort and get 1% of worlds
+        var topWorlds = possibleWorlds
+            .OrderByDescending(world => world.Marks)
+            .Take(numWorlds)
             .ToList();
-
-        Random random = new Random();
-        Message question = CommunicationTemplates.Messages[random.Next(0, CommunicationTemplates.Messages.Count)];
         
-        question.Accuser = player;
-        question.Accused = inquirePlayer;
-        question.PlayerAsk = players[random.Next(0, players.Count)];
-        question.Role = inquirePlayer.PossibleRole;
+        
+        
+        // TODO maybe choose specific question later
+        // TODO if player has explicit knowledge leverage it
 
-        Console.WriteLine($"Communication: {question.GenerateText()}");
+        Message question = LogicManager.ChooseQuestion(player, topWorlds[0]);
+        question.Accuser = player;
+
+        if (question.Intent == MessageIntent.Defend)
+        {
+            question.Role = player.Role;
+        }
+        else
+        {
+            // TODO change depending on if is town or mafia
+            // if (player.Role.IsTown)
+            var (inquirePlayer, pWorldId) = LogicManager.GetHighestInformationGainPlayer(player, topWorlds);
+            question.Accused = inquirePlayer;
+            question.PlayerAsk = LogicManager.GetPlayerToAsk(player, inquirePlayer, pWorldId);
+            question.Role = inquirePlayer.PossibleRole;
+            // else
+            //        (inquirePlayer, pWorldId) = LogicManager.GetLeastInformationGainPlayer(player.PossibleWorlds);
+        }
+
+        Console.WriteLine($"Comm: {question.GenerateText()}");
 
         if (question.Responses != null && question.Responses.Count > 0)
         {
@@ -42,21 +59,19 @@ public class CommunicationManager
         }
 
         // Call the custom defined UpdateWorlds function
-        if (question.UpdateWorlds != null)
-                question.UpdateWorlds(question);
-
-
-        // WorldManager.UpdateWorldsByMessage(question);
+        // if (question.UpdateWorlds != null)
+            question.UpdateWorlds(question);
     }
 
     public void RequestResponse(Message question)
     {
         Random random = new Random();
-        question.Response = question.Responses[random.Next(0, question.Responses.Count)].Text;
-        Console.WriteLine($"Communication Response: {question.Response}");
+        Message response = question.Responses[random.Next(0, question.Responses.Count)];
+        question.Response = response.Text;
+        Console.WriteLine($"Comm Response: {response.Text}");
         
         // Wait till response is added to update the world by message
-        if (question.UpdateWorlds != null)
-            question.UpdateWorlds(question);
+        // if (response.UpdateWorlds != null)
+            response.UpdateWorlds(question);
     }
 }

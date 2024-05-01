@@ -87,7 +87,7 @@ public class Sheriff : Role, IRoleNightAction
         //Announce Selected target to action handler
         if (selectedPlayer != null)
         {
-            Player target = new Player(selectedPlayer.ActualPlayer.Name, selectedPlayer.ActualPlayer.Role);
+            Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
             Action action = new Action(player, "Sheriff", target);
 
