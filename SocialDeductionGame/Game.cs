@@ -8,8 +8,11 @@ namespace SocialDeductionGame
     {
         public GameConfiguration GameConfig = new GameConfiguration();
         public List<Player> Players { get; set; }
-
         
+        private int _round = 0;
+
+        public int Round => _round;
+
         private static Game _instance;
         private bool _gameFinished = false;
 
@@ -56,16 +59,17 @@ namespace SocialDeductionGame
             Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
             startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            int i = 0;
-            
+
             while (!_gameFinished)
             {
-                Console.WriteLine($"Round: {i++}");
+                Console.WriteLine($"Round: {Round}");
                 
                 RunDayPhase();
                 RunNightPhase();
                 
                 CheckIfFinished();
+                
+                _round++;
 
                 if (_gameFinished)
                 {
@@ -81,9 +85,9 @@ namespace SocialDeductionGame
             bool mafiaWins = Players.Count(p => p.IsAlive && !p.Role.IsTown) >= Players.Count(p => p.IsAlive && p.Role.IsTown);
 
             if (townWins)
-                Console.WriteLine("Town wins!");
+                Console.WriteLine($"Town wins! Round:{_round}");
             else if (mafiaWins)
-                Console.WriteLine("Mafia wins!");
+                Console.WriteLine($"Mafia wins! Round:{_round}");
 
             _gameFinished = townWins || mafiaWins;
         }
@@ -98,7 +102,7 @@ namespace SocialDeductionGame
             for (int i = 0; i < GameConfig.Players; i++)
             {
                 Player newPlayer = new Player(
-                    "Player " + (i + 1),
+                    i,
                     availableRoles[i]
                 );
                 
@@ -125,13 +129,17 @@ namespace SocialDeductionGame
                     dayAction.PerformDayAction(Players);
                 }
             }
-
-            foreach (Player player in Players.Where(player => player.IsAlive))
-            {
-                player.Communicate();
-            }
-
             
+            Random random = new Random();
+
+            // Allowing up to 3 communications per turn
+            for (var i = 0; i < 2; i++)
+            {
+                foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
+                {
+                        player.Communicate();
+                }
+            }
             
             // Voting stuff
             List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
@@ -163,7 +171,7 @@ namespace SocialDeductionGame
                     }
 
                     //Select at random which of the most likely worlds to choose
-                    var random = new Random();
+                    random = new Random();
                     int index = random.Next(0, worldList.Count);
 
                     World SelectedWorld = worldList[index];

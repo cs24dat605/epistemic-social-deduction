@@ -141,25 +141,28 @@ public static class WorldManager
     {
         foreach (var player in Game.Instance.Players)
         {
+            player.Accusations.Add(message);
+            
             foreach (var pWorld in player.PossibleWorlds)
             {
-                if (!pWorld.IsActive)
-                    continue;
-
-                pWorld.Accusations.Add(message);
-
+                // if (!pWorld.IsActive)
+                //     continue;
+                
                 foreach (var pPlayer in pWorld.PossiblePlayers)
                 {
-                    // TODO maybe implement that this on is acccused instead in the message
-                    if (type == 0)
-                        if (pPlayer.ActualPlayer != message.Accuser)
-                            continue;
-
-                    if (type is 1 or 2 or 3)
-                        if (pPlayer != message.Accused)
-                            continue;
-
+                    // If pPlayer is not the accuser, skip
+                    if (type == 0 && pPlayer.ActualPlayer != message.Accuser)
+                        continue;
+                    
+                    // If pPlayer is not the accused, skip
+                    if (type is 1 or 2 or 3 && pPlayer != message.Accused)
+                        continue;
+                    
                     bool isCorrect;
+                    
+                    // Check correct by if role matches world
+                    if (type is 0 or 1 or 2)
+                        isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
                     // Flip statement by marking the opposite roles
                     if (type == 3 || message.Response == "No")
@@ -167,6 +170,7 @@ public static class WorldManager
                     else
                         isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
+                    // Add or remove marks
                     if (isCorrect)
                         pWorld.Marks++;
                     else
