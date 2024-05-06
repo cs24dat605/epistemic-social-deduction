@@ -218,7 +218,7 @@ public class ActionManager
                     {
                         if (!investigatorRoles.Contains(y.PossiblePlayers[targetIndex].PossibleRole.Name))
                         {
-                            y.isActive = false;
+                            y.IsActive = false;
 
                             // TODO: Here it should also update the belifes of the investigator
                         }
@@ -366,16 +366,6 @@ public class ActionManager
                 }
                 ii++;
             }
-
-            //Kill target
-            foreach (Player player in players.Where(player => player.IsAlive == true))
-            {
-                foreach (World world in player.PossibleWorlds)
-                {
-                    world.PossiblePlayers[targetIndex].IsAlive = false;
-                }
-            }
-            players[targetIndex].IsAlive = false;
         }
 
         //Only mafioso alive or mafioso ordered by a godfather
@@ -397,13 +387,11 @@ public class ActionManager
 
             //Find index of target
             ii = 0;
-            int targetIndex = 0;
             foreach (Player player in players)
             {
                 if (player.Name == actions[killerIndex].target.Name)
                 {
                     killTargets.Add(player.Name);
-                    targetIndex = ii;
                     break;
                 }
                 ii++;
@@ -454,13 +442,11 @@ public class ActionManager
             {
                 //Find index of target
                 int ii = 0;
-                int targetIndex = 0;
                 foreach (Player player in players)
                 {
                     if (player.Name == action.player.Name)
                     {
                         killTargets.Add((player.Name));
-                        targetIndex = ii;
                         break;
                     }
                     ii++;

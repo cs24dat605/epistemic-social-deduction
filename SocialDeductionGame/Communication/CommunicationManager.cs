@@ -7,9 +7,6 @@ public class CommunicationManager
 {
     public void Communicate(Player player)
     {
-        // TODO change depending on if is town or mafia
-        PossiblePlayer inquirePlayer = LogicManager.GetHighestInformationGainPlayer(player.PossibleWorlds);
-
         // TODO maybe ask contradiction information here
         // TODO maybe choose specific question later
         // Probability check if player should communicate
@@ -28,7 +25,6 @@ public class CommunicationManager
             .OrderByDescending(world => world.Marks)
             .Take(numWorlds)
             .ToList();
-        
         
         
         // TODO maybe choose specific question later

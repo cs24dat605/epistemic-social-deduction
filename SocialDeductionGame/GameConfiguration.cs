@@ -74,49 +74,6 @@ public class GameConfiguration
         if (Doctor != 0) availableRoles.Add(new Doctor());
         if (Investigator != 0) availableRoles.Add(new Investigator());
 
-
-
-
-
-
-
-
-
-
-        return availableRoles;
-    }
-    
-    public List<Role> GetRoleCounts()
-    {
-        var availableRoles = new List<Role>();
-            
-        availableRoles.AddRange(Enumerable.Repeat(new Villager(), Villagers));
-        availableRoles.AddRange(Enumerable.Repeat(new Consigliere(), Consigliere));
-        availableRoles.AddRange(Enumerable.Repeat(new Godfather(), Godfather));
-        availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), Mafioso));
-        availableRoles.AddRange(Enumerable.Repeat(new Consort(), Consort));
-        availableRoles.AddRange(Enumerable.Repeat(new Escort(), Consort));
-        availableRoles.AddRange(Enumerable.Repeat(new Sheriff(), Sheriffs));
-        availableRoles.AddRange(Enumerable.Repeat(new Vigilante(), Vigilante));
-        availableRoles.AddRange(Enumerable.Repeat(new Veteran(), Veteran));
-
-        return availableRoles;
-    }
-    
-    public List<Role> GetRoles()
-    {
-        var availableRoles = new List<Role>();
-            
-        availableRoles.Add(new Villager());
-        availableRoles.Add(new Consigliere());
-        availableRoles.Add(new Godfather());
-        availableRoles.Add(new Mafioso());
-        availableRoles.Add(new Consort());
-        availableRoles.Add(new Escort());
-        availableRoles.Add(new Sheriff());
-        availableRoles.Add(new Vigilante());
-        availableRoles.Add(new Veteran());
-
         return availableRoles;
     }
 }

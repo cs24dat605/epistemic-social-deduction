@@ -30,8 +30,8 @@ for (int i = 0; i < 100; i++)
     {
         jsonWin = JsonSerializer.Serialize("Mafia");
     }
-
-    string jsonRoundCount = JsonSerializer.Serialize(WerewolfGame.round.ToString());
+    
+    string jsonRoundCount = JsonSerializer.Serialize(Game.Instance.Round.ToString());
 
     List<string> activeWorlds = new List<string>();
     foreach (var p in WerewolfGame.Players)

@@ -109,7 +109,7 @@ public class Doctor : Role, IRoleNightAction
         //Event role this time is mafioso ofc.
         if (selectedPlayer != null)
         {
-            Player target = new Player(selectedPlayer.ActualPlayer.Name, selectedPlayer.ActualPlayer.Role);
+            Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
             Action action = new Action(player, "Doctor", target);
 

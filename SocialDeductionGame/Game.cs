@@ -66,8 +66,6 @@ namespace SocialDeductionGame
                 Console.WriteLine($"Round: {Round}");
                 startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 
-            while (!_gameFinished)
-            {
                 RunDayPhase();
                 RunNightPhase();
                 
@@ -143,7 +141,7 @@ namespace SocialDeductionGame
             Random random = new Random();
 
             // Allowing up to 3 communications per turn
-            for (var i = 0; i < 2; i++)
+            for (var _ = 0; _ < 2; _++)
             {
                 foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
                 {
