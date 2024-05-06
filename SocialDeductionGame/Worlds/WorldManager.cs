@@ -105,12 +105,6 @@ public static class WorldManager
 
             return;
         }
-        
-        // Parallel.ForEach(roleList, role =>
-        // {
-        //     curArray[i] = role;
-        //     GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
-        // });
 
         foreach (var role in roleList)
         {

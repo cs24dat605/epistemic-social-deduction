@@ -7,6 +7,8 @@ public class CommunicationManager
 {
     public void Communicate(Player player)
     {
+        // TODO maybe ask contradiction information here
+        // TODO maybe choose specific question later
         // Probability check if player should communicate
         if (!ProbabilityManager.ShouldEventOccur("Communicate"))
         {
@@ -23,7 +25,6 @@ public class CommunicationManager
             .OrderByDescending(world => world.Marks)
             .Take(numWorlds)
             .ToList();
-        
         
         
         // TODO maybe choose specific question later
@@ -59,8 +60,11 @@ public class CommunicationManager
         }
 
         // Call the custom defined UpdateWorlds function
-        // if (question.UpdateWorlds != null)
+        if (question.UpdateWorlds != null)
             question.UpdateWorlds(question);
+
+
+        // WorldManager.UpdateWorldsByMessage(question);
     }
 
     public void RequestResponse(Message question)
@@ -71,7 +75,7 @@ public class CommunicationManager
         Console.WriteLine($"Comm Response: {response.Text}");
         
         // Wait till response is added to update the world by message
-        // if (response.UpdateWorlds != null)
-            response.UpdateWorlds(question);
+        if (question.UpdateWorlds != null)
+            question.UpdateWorlds(question);
     }
 }

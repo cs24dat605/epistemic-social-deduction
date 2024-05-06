@@ -1,4 +1,3 @@
-
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
@@ -219,5 +218,23 @@ public static class LogicManager
             return false;
         
         return true;
+    }
+
+    public static Role GetClaimRoleMafia(Player me)
+    {
+        // Sort the world by most likely
+        IOrderedEnumerable<World> sortedWorlds = me.PossibleWorlds.OrderByDescending(world => world.Marks);
+
+        // Find the first most likely world where the player is town
+        foreach (var world in sortedWorlds)
+        {
+            Role myRole = world.PossiblePlayers[me.Id].PossibleRole;
+            
+            if (myRole.IsTown)
+                return world.PossiblePlayers[me.Id].PossibleRole;
+        }
+
+        // This shouldn't occur
+        return new Villager();
     }
 }
