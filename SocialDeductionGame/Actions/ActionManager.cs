@@ -19,10 +19,10 @@ public class ActionManager
 
     public void HandleActions(List<Player> players)
     {
-        //Sort actions by
-        //Role blockers first
-        //Then Godfather, Mafioso and sheriff
         List<Action> actions = new List<Action>();
+
+        List<string> killTargets = new List<string>();
+        List<string> doctorProtected = new List<string>();
 
         foreach (var e in this.Actions)
         {
@@ -102,7 +102,6 @@ public class ActionManager
             actions.RemoveAt(ii);
         }
 
-
         //Sheriff action
         //find index of sheriff(s)
         List<int> sheriffIndex = new List<int>();
@@ -139,6 +138,85 @@ public class ActionManager
                     foreach (var y in players[x].PossibleWorlds.Where(y => y.IsActive != false))
                     {
                         if (y.PossiblePlayers[targetIndex].PossibleRole.IsTown != players[targetIndex].Role.IsTown)
+                        {
+                            y.IsActive = false;
+
+                            // TODO: Here it should also update the belifes of the investigator
+                        }
+                    }
+                }
+            }
+        }
+
+        //Investigator action
+        //find index of investigators(s)
+        List<int> investigatorIndex = new List<int>();
+        i = 0;
+        foreach (var x in players)
+        {
+            if (x.Role is Investigator)
+            {
+                investigatorIndex.Add(i);
+            }
+            i++;
+        }
+        foreach (var e in actions.Where(e => e.typeOfAction is "Investigator"))
+        {
+            //Find the index of target
+            int ii = 0;
+            int targetIndex = 0;
+            foreach (var x in players)
+            {
+                if (x.Name == e.target.Name)
+                {
+                    targetIndex = ii;
+                    break;
+                }
+                ii++;
+            }
+
+
+            List<string> investigatorRoles = new List<string>(); 
+            switch (players[targetIndex].Role)
+            {
+                case Doctor:
+                case Escort:
+                case Blackmailer:
+                    investigatorRoles.Add("Doctor");
+                    investigatorRoles.Add("Escort");
+                    investigatorRoles.Add("Blackmailer");
+                    break;
+                case Veteran:
+                case Consigliere:
+                case Consort:
+                    investigatorRoles.Add("Veteran");
+                    investigatorRoles.Add("Consigliere");
+                    investigatorRoles.Add("Consort");
+                    break;
+                case Investigator:
+                case Sheriff:
+                case Godfather:
+                    investigatorRoles.Add("Investigator");
+                    investigatorRoles.Add("Sheriff");
+                    investigatorRoles.Add("Godfather");
+                    break;
+                case Vigilante:
+                case Villager:
+                case Mafioso:
+                    investigatorRoles.Add("Vigilante");
+                    investigatorRoles.Add("Villager");
+                    investigatorRoles.Add("Mafioso");
+                    break ;
+            }
+
+            //Change worlds that are not in accordance to new information to inactive
+            foreach (var x in investigatorIndex)
+            {
+                if (e.player.Name == players[x].Name) //Double checking
+                {
+                    foreach (var y in players[x].PossibleWorlds.Where(y => y.IsActive != false))
+                    {
+                        if (!investigatorRoles.Contains(y.PossiblePlayers[targetIndex].PossibleRole.Name))
                         {
                             y.IsActive = false;
 
@@ -279,26 +357,15 @@ public class ActionManager
 
             //Find index of target
             ii = 0;
-            int targetIndex = 0;
             foreach (Player player in players)
             {
                 if (player.Name == actions[killerIndex].target.Name)
                 {
-                    targetIndex = ii;
+                    killTargets.Add(player.Name);
                     break;
                 }
                 ii++;
             }
-
-            //Kill target
-            foreach (Player player in players.Where(player => player.IsAlive == true))
-            {
-                foreach (World world in player.PossibleWorlds)
-                {
-                    world.PossiblePlayers[targetIndex].IsAlive = false;
-                }
-            }
-            players[targetIndex].IsAlive = false;
         }
 
         //Only mafioso alive or mafioso ordered by a godfather
@@ -325,22 +392,12 @@ public class ActionManager
             {
                 if (player.Name == actions[killerIndex].target.Name)
                 {
+                    killTargets.Add(player.Name);
                     targetIndex = ii;
                     break;
                 }
                 ii++;
             }
-
-            //Kill target
-            // TODO: Players should also update their belives here, since this is a public announcement
-            foreach (Player player in players.Where(player => player.IsAlive == true))
-            {
-                foreach (World world in player.PossibleWorlds)
-                {
-                    world.PossiblePlayers[targetIndex].IsAlive = false;
-                }
-            }
-            players[targetIndex].IsAlive = false;
         }
 
         //Vigilante action
@@ -367,6 +424,7 @@ public class ActionManager
             {
                 if (player.Name == actions[killerIndex].target.Name)
                 {
+                    killTargets.Add(player.Name);
                     targetIndex = ii;
                     if (player.Role.IsTown == true)
                     {
@@ -377,22 +435,12 @@ public class ActionManager
                 }
                 ii++;
             }
-
-            //Kill target
-            // TODO: Players should also update their belives here, since this is a public announcement
-            foreach (Player player in players.Where(player => player.IsAlive == true))
-            {
-                foreach (World world in player.PossibleWorlds)
-                {
-                    world.PossiblePlayers[targetIndex].IsAlive = false;
-                }
-            }
-            players[targetIndex].IsAlive = false;
         }
 
+        //Veteran action
         foreach (var e in actions.Where(e => e.typeOfAction is "Veteran"))
         {
-            foreach (Action action in actions.Where(action => action.target.Name == e.player.Name && action.player != action.target))
+            foreach (Action action in actions.Where(action => action.target.Name == e.player.Name && action.player.Name != action.target.Name))
             {
                 //Find index of target
                 int ii = 0;
@@ -401,22 +449,68 @@ public class ActionManager
                 {
                     if (player.Name == action.player.Name)
                     {
+                        killTargets.Add((player.Name));
                         targetIndex = ii;
                         break;
                     }
                     ii++;
                 }
+            }
+        }
 
-                //Kill target
-                // TODO: Players should also update their belives here, since this is a public announcement
-                foreach (Player player in players.Where(player => player.IsAlive == true))
+        //Blackmailer action
+        foreach (var e in actions.Where(e => e.typeOfAction is "Blackmailer"))
+        {
+            foreach (Player player in players.Where(player => player.Name == e.target.Name))
+            {
+                player.Role.blackmailed = true;
+                break;
+            }
+        }
+        
+        //Doctor action
+        foreach(var e in actions.Where(e => e.typeOfAction is "Doctor"))
+        {
+            foreach (Player player in players.Where(player => player.Name == e.target.Name))
+            {
+                doctorProtected.Add((player.Name));
+            }
+        }
+
+
+        //Kill players
+        foreach (var e in killTargets)
+        {
+            bool skip = false;
+            if (!doctorProtected.Contains(e))
+            {
+                foreach (Player player in players.Where(player => player.Name == e))
                 {
-                    foreach (World world in player.PossibleWorlds)
+                    //If the target is an active veteran, he does not die
+                    if (player.Role.Name == "Veteran")
                     {
-                        world.PossiblePlayers[targetIndex].IsAlive = false;
+                        foreach(var action in actions) 
+                        {
+                            if (action.typeOfAction is "Veteran" && action.player.Name == player.Name) skip = true;
+                        }
+                    }
+                    if (skip) break;
+
+                    foreach(Player p in players.Where(p => p.IsAlive))
+                    {
+                        foreach(World world in p.PossibleWorlds)
+                        {
+                            foreach(PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == e))
+                            {
+                                possiblePlayer.IsAlive = false;
+                            }
+                        }
+                    }
+                    foreach (Player p in players.Where(p => p.Name == e))
+                    {
+                        p.IsAlive = false;
                     }
                 }
-                players[targetIndex].IsAlive = false;
             }
         }
     }

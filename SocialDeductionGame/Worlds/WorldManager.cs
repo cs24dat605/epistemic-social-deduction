@@ -34,19 +34,23 @@ public static class WorldManager
             
             return worlds;
         }
-        
-        var counts = new Dictionary<Role, int>
-        {
-            { new Villager(), Game.Instance.GameConfig.Villagers }, 
-            { new Sheriff(), Game.Instance.GameConfig.Sheriffs },
-            { new Escort(), Game.Instance.GameConfig.Escort },
-            { new Vigilante(), Game.Instance.GameConfig.Vigilante },
-            { new Veteran(), Game.Instance.GameConfig.Veteran },
-            { new Godfather(), Game.Instance.GameConfig.Godfather },
-            { new Mafioso(), Game.Instance.GameConfig.Mafioso },
-            { new Consort(), Game.Instance.GameConfig.Consort },
-            { new Consigliere(), Game.Instance.GameConfig.Consigliere}
-        };
+
+        var counts = new Dictionary<Role, int>();
+
+        if (Game.Instance.GameConfig.Villagers != 0)    counts.Add(new Villager(), Game.Instance.GameConfig.Villagers);
+        if (Game.Instance.GameConfig.Sheriffs != 0)     counts.Add(new Sheriff(), Game.Instance.GameConfig.Sheriffs);
+        if (Game.Instance.GameConfig.Escort != 0)       counts.Add(new Escort(), Game.Instance.GameConfig.Escort);
+        if (Game.Instance.GameConfig.Vigilante != 0)    counts.Add(new Vigilante(), Game.Instance.GameConfig.Vigilante);
+        if (Game.Instance.GameConfig.Veteran != 0)      counts.Add(new Veteran(), Game.Instance.GameConfig.Veteran);
+        if (Game.Instance.GameConfig.Doctor != 0)       counts.Add(new Doctor(), Game.Instance.GameConfig.Doctor);
+        if (Game.Instance.GameConfig.Investigator != 0) counts.Add(new Investigator(), Game.Instance.GameConfig.Investigator);
+        if (Game.Instance.GameConfig.Godfather != 0)    counts.Add(new Godfather(), Game.Instance.GameConfig.Godfather);
+        if (Game.Instance.GameConfig.Mafioso != 0)      counts.Add(new Mafioso(), Game.Instance.GameConfig.Mafioso);
+        if (Game.Instance.GameConfig.Consort != 0)      counts.Add(new Consort(), Game.Instance.GameConfig.Consort);
+        if (Game.Instance.GameConfig.Consigliere != 0)  counts.Add(new Consigliere(), Game.Instance.GameConfig.Consigliere);
+        if (Game.Instance.GameConfig.Blackmailer != 0)  counts.Add(new Blackmailer(), Game.Instance.GameConfig.Blackmailer);
+
+
 
         Console.WriteLine("No generated worlds file was found!");
         Console.WriteLine("Generating worlds");
