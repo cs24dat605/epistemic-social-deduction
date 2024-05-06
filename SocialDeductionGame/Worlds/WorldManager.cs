@@ -105,17 +105,17 @@ public static class WorldManager
             return;
         }
         
-        Parallel.ForEach(roleList, role =>
-        {
-            curArray[i] = role;
-            GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
-        });
-
-        // foreach (var role in roleList)
+        // Parallel.ForEach(roleList, role =>
         // {
         //     curArray[i] = role;
         //     GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
-        // }
+        // });
+
+        foreach (var role in roleList)
+        {
+            curArray[i] = role;
+            GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
+        }
     }
     
     public static void MoveWorldsToPlayers(List<World> worlds)
