@@ -50,7 +50,6 @@ public class Sheriff : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-
             foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
@@ -97,7 +96,7 @@ public class Sheriff : Role, IRoleNightAction
         //Announce Selected target to action handler
         if (selectedPlayer != null)
         {
-            Player target = new Player(selectedPlayer.ActualPlayer.Name, selectedPlayer.ActualPlayer.Role);
+            Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
             Action action = new Action(player, "Sheriff", target);
 

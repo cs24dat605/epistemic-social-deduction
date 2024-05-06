@@ -38,14 +38,14 @@ public class Message
 
         Responses = responses ?? new List<Message>();
 
-        // Generate the Text (explained below)
+        // Generate the Text
         Text = GenerateText();
     }
 
     public string GenerateText()
     {
-        if (Intent == MessageIntent.Response)
-            return Template;
+        // if (Intent == MessageIntent.Response)
+        //     return Template;
 
         string messageText = Template;
 

@@ -21,6 +21,9 @@ public class PossiblePlayer
     [JsonIgnore]
     public string Name => ActualPlayer.Name;
     
+    [JsonIgnore]
+    public int Id => ActualPlayer.Id;
+    
     public PossiblePlayer(Role role, Player player)
     {
         ActualPlayer = player;
