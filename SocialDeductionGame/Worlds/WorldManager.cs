@@ -111,29 +111,18 @@ public static class WorldManager
     
     public static void MoveWorldsToPlayers(List<World> worlds)
     {
-        List<World> worldCopy = new List<World>(worlds);
         foreach (var player in Game.Instance.Players)
         {
-            player.PossibleWorlds = new List<World>(worldCopy);
-            // player.PossibleWorlds = new List<World>(worldCopy.Select(world =>
-            // {
-            //     // Create a deep copy of the world
-            //     World worldCopyForPlayer = new World(new List<PossiblePlayer>(world.PossiblePlayers))
-            //     {
-            //         IsActive = world.IsActive,
-            //         Marks = world.Marks,
-            //         Accusations = new List<Message>(world.Accusations)
-            //     };
-            //
-            //     if (worldCopyForPlayer.PossiblePlayers[player.ID].PossibleRole.Name != player.Role.Name)
-            //     {
-            //         worldCopyForPlayer.IsActive = false;
-            //     }
-            //
-            //     return worldCopyForPlayer;
-            // }).ToList());
-            //
-            // Console.WriteLine($"{player.PossibleWorlds.Select(world => world.IsActive).ToList().Count}:{player.PossibleWorlds.Select(world => world.IsActive == false).ToList().Count}");
+            List<World> worldList = new List<World>();
+            
+            foreach (var world in worlds)
+            {
+                World worldCopy = new World(world.PossiblePlayers);
+
+                worldList.Add(worldCopy);
+            }
+
+            player.PossibleWorlds = worldList;
         }
     }
 
