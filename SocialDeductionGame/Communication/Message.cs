@@ -1,3 +1,4 @@
+using SocialDeductionGame.Logic;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 
@@ -51,7 +52,16 @@ public class Message
 
         if (Accuser != null)
         {
-            messageText = messageText.Replace("{MyRole}", Accuser.Role.Name);
+            if (!Accuser.Role.IsTown)
+            {
+                Role claimRole = LogicManager.GetClaimRoleMafia(Accuser);
+                messageText = messageText.Replace("{MyRole}", claimRole.Name);
+            }
+            else
+            {
+                messageText = messageText.Replace("{MyRole}", Accuser.Role.Name);
+            }
+            
             messageText = messageText.Replace("{Me}", Accuser.Name);
         }
 
