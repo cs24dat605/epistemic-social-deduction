@@ -3,19 +3,19 @@ using Action = SocialDeductionGame.Actions.Action;
 
 namespace SocialDeductionGame.Roles;
 
-public class Sheriff : Role, IRoleNightAction
+public class Investigator : Role, IRoleNightAction
 {
-    public Sheriff()
+    public Investigator()
     {
-        Name = "Sheriff";
+        Name = "Investigator";
         IsTown = true;
         checkedPlayers = new List<string>();
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
     {
-        //Sheriff is the primary information gatherer for the town
-        //Sheriff chooses to see one persons roles
+        //Investigator is the primary information gatherer for the town
+        //Investigator chooses to see one persons roles
 
         //first
         List<World> worldList = new List<World>();
@@ -49,6 +49,7 @@ public class Sheriff : Role, IRoleNightAction
             int index = random.Next(worldList.Count);
 
             World SelectedWorld = worldList[index];
+            
 
             foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
@@ -62,7 +63,7 @@ public class Sheriff : Role, IRoleNightAction
             {
                 i++;
             }
-            if (worldList.Count < i)
+            if(worldList.Count < i)
             {
                 //Makes it such that there are no infinite runs
                 return;
@@ -98,7 +99,7 @@ public class Sheriff : Role, IRoleNightAction
         {
             Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
-            Action action = new Action(player, "Sheriff", target);
+            Action action = new Action(player, "Investigator", target);
 
             actions.Add(action);
 

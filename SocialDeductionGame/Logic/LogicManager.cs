@@ -1,4 +1,3 @@
-
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;

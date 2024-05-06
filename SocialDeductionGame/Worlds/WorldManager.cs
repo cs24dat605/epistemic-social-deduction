@@ -63,10 +63,13 @@ public static class WorldManager
             { new Escort(), Game.Instance.GameConfig.Escort },
             { new Vigilante(), Game.Instance.GameConfig.Vigilante },
             { new Veteran(), Game.Instance.GameConfig.Veteran },
+            { new Doctor(), Game.Instance.GameConfig.Doctor },
+            { new Investigator(), Game.Instance.GameConfig.Investigator },
             { new Godfather(), Game.Instance.GameConfig.Godfather },
             { new Mafioso(), Game.Instance.GameConfig.Mafioso },
             { new Consort(), Game.Instance.GameConfig.Consort },
-            { new Consigliere(), Game.Instance.GameConfig.Consigliere}
+            { new Consigliere(), Game.Instance.GameConfig.Consigliere},
+            { new Blackmailer(), Game.Instance.GameConfig.Blackmailer }
         };
 
         Console.WriteLine("No generated worlds file was found!");
@@ -101,6 +104,12 @@ public static class WorldManager
 
             return;
         }
+        
+        // Parallel.ForEach(roleList, role =>
+        // {
+        //     curArray[i] = role;
+        //     GenerateCombinations(curArray, i + 1, roleList, counts, uniqueArrays);
+        // });
 
         foreach (var role in roleList)
         {

@@ -10,6 +10,8 @@ public class Player
     public int Id { get; }
     public string Name { get; }
     public bool IsAlive { get; set; }
+    
+    // [JsonConverter(typeof(RoleConverter))]
     public Role Role { get; }
 
     public List<World> PossibleWorlds;
