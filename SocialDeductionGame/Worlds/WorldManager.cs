@@ -79,7 +79,7 @@ public static class WorldManager
         
          // allWorlds = GenerateArraysBruteForce(counts);
         
-        // File.WriteAllText(worldFile, JsonSerializer.Serialize(allWorlds));
+        // File.zWriteAllText(worldFile, JsonSerializer.Serialize(allWorlds));
 
         return allWorlds;
     }
@@ -137,7 +137,7 @@ public static class WorldManager
         }
     }
 
-    public static void UpdateWorldsByMessage(Message message, int type)
+    public static void UpdateWorldsByMessage(Message message, bool reverseMarks = false)
     {
         foreach (var player in Game.Instance.Players)
         {
@@ -151,24 +151,28 @@ public static class WorldManager
                 foreach (var pPlayer in pWorld.PossiblePlayers)
                 {
                     // If pPlayer is not the accuser, skip
-                    if (type == 0 && pPlayer.ActualPlayer != message.Accuser)
+                    if (message.Type == 0 && pPlayer.ActualPlayer != message.Accuser)
                         continue;
                     
                     // If pPlayer is not the accused, skip
-                    if (type is 1 or 2 or 3 && pPlayer != message.Accused)
+                    if (message.Type is 1 or 2 or 3 && pPlayer != message.Accused)
                         continue;
                     
                     bool isCorrect;
                     
                     // Check correct by if role matches world
-                    if (type is 0 or 1 or 2)
+                    if (message.Type is 0 or 1 or 2)
                         isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
                     // Flip statement by marking the opposite roles
-                    if (type == 3 || message.Response == "No")
+                    if (message.Type == 3 || message.Response == "No")
                         isCorrect = pPlayer.PossibleRole.Name != message.Role.Name;
                     else
                         isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
+                    
+                    // If we reverse the marks just flip iscorrect
+                    if (reverseMarks)
+                        isCorrect = !isCorrect;
                     
                     // Add or remove marks
                     if (isCorrect)
@@ -178,5 +182,15 @@ public static class WorldManager
                 }
             }
         }
+    }
+
+    public static void UpdateWorldByDeath(Player me)
+    {
+        foreach (var accusation in me.Accusations)
+        {
+            UpdateWorldsByMessage(accusation, true);
+        }
+        
+        me.Accusations.Clear();
     }
 }

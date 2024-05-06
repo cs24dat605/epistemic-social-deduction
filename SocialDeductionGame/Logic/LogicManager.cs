@@ -16,7 +16,7 @@ public static class LogicManager
             (var pPlayer, int pWorldId) = GetNonAccusationPlayer(me);
             
             // 1. If player without accusation found return them
-            if (pPlayer != null)
+            if (pWorldId != -1)
                 return (pPlayer, pWorldId);
         }
 

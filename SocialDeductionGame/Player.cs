@@ -15,6 +15,12 @@ public class Player
     public List<World> PossibleWorlds;
     public List<Message> Accusations = [];
 
+    public void Kill()
+    {
+        IsAlive = false;
+        WorldManager.UpdateWorldByDeath(this);
+    }
+
     public Player(int id, Role role)
     {
         Id = id;
