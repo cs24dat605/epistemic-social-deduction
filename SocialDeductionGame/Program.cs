@@ -13,7 +13,7 @@ for (int i = 0; i < 100; i++)
     WerewolfGame.StartGame(allWorlds);
 
     List<string> roles = new List<string>();
-    string fileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "test.txt"));
+    string fileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "results.txt"));
     //Start by adding all roles to the string
     foreach (var p in WerewolfGame.Players)
     {
@@ -103,7 +103,7 @@ for (int i = 0; i < 100; i++)
 if (!readingMode)
 {
     // Path to the text file
-    string filePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "test.txt"));
+    string filePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "results.txt"));
 
     // Dictionary to store the count of wins for each team
     Dictionary<string, int> teamScores = new Dictionary<string, int>
