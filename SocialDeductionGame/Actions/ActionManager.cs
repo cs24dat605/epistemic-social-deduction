@@ -51,7 +51,7 @@ public class ActionManager
                     world.PossiblePlayers[targetIndex].IsAlive = false;
                 }
             }
-            players[targetIndex].IsAlive = false;
+            players[targetIndex].Kill();
 
             //Remove vigilante action
             for (ii = 0; ii < actions.Count;)
@@ -504,7 +504,7 @@ public class ActionManager
                     }
                     foreach (Player p in players.Where(p => p.Name == e))
                     {
-                        p.IsAlive = false;
+                        p.Kill();
                     }
                 }
             }

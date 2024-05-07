@@ -9,17 +9,22 @@ public class Player
 {
     public int Id { get; }
     public string Name { get; }
-    public bool IsAlive { get; set; }
+    
+    private bool _isAlive;
+
+    public bool IsAlive
+    {
+        get => _isAlive;
+    }
     
     // [JsonConverter(typeof(RoleConverter))]
     public Role Role { get; }
-
     public List<World> PossibleWorlds;
     public List<Message> Accusations = [];
 
     public void Kill()
     {
-        IsAlive = false;
+        _isAlive = false;
         WorldManager.UpdateWorldByDeath(this);
     }
 
@@ -28,7 +33,7 @@ public class Player
         Id = id;
         Name = $"Player {id}" ;
         Role = role;
-        IsAlive = true;
+        _isAlive = true;
     }
 
     public void Communicate()

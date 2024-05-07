@@ -258,7 +258,7 @@ namespace SocialDeductionGame
                 }
                 foreach (Player p in Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name))
                 {
-                    p.IsAlive = false;
+                    p.Kill();
                 }
 
             }

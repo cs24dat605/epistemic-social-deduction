@@ -133,7 +133,8 @@ public static class WorldManager
     {
         foreach (var player in Game.Instance.Players)
         {
-            player.Accusations.Add(message);
+            if (!reverseMarks)
+                player.Accusations.Add(message);
             
             foreach (var pWorld in player.PossibleWorlds)
             {
@@ -178,11 +179,12 @@ public static class WorldManager
 
     public static void UpdateWorldByDeath(Player me)
     {
-        foreach (var accusation in me.Accusations)
-        {
-            UpdateWorldsByMessage(accusation, true);
-        }
+        if (me.Accusations.Count > 0)
+            foreach (var accusation in me.Accusations)
+            {
+                UpdateWorldsByMessage(accusation, true);
+            }
         
-        me.Accusations.Clear();
+        me.Accusations = new List<Message>();
     }
 }
