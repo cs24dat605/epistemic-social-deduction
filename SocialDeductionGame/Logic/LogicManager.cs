@@ -6,8 +6,6 @@ namespace SocialDeductionGame.Logic;
 
 public static class LogicManager
 {
-    // TODO avoid choosing yourself when saying that another player is another role
-    // TODO avoid saying i am mafia etc
     public static (PossiblePlayer, int) GetHighestInformationGainPlayer(Player me, List<World> topWorlds)
     {
         if (nonAccusedPlayers.Count != 0 || Game.Instance.Round == 0)

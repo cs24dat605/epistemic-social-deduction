@@ -119,10 +119,6 @@ namespace SocialDeductionGame
                 
             }
             
-            // Players.Sort();
-            // TODO Need to sort somehow
-
-            // Console.WriteLine(playerList);
             return playerList;
         }
         

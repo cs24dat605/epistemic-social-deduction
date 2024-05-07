@@ -7,8 +7,6 @@ public class CommunicationManager
 {
     public void Communicate(Player player)
     {
-        // TODO maybe ask contradiction information here
-        // TODO maybe choose specific question later
         // Probability check if player should communicate
         if (!ProbabilityManager.ShouldEventOccur("Communicate"))
         {
