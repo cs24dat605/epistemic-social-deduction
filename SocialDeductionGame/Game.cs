@@ -39,16 +39,12 @@ namespace SocialDeductionGame
             }
         }
         
-        public void StartGame()
+        public void StartGame(List<World> allWorlds)
         {
             _gameFinished = false;
             _round = 0;
-            Players = CreatePlayers();
 
             var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            
-            List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
-            Console.WriteLine($"Time taken to generate worlds: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
             Console.WriteLine("Moving worlds to player");
             WorldManager.MoveWorldsToPlayers(allWorlds);
@@ -101,7 +97,7 @@ namespace SocialDeductionGame
             _gameFinished = townWins || mafiaWins;
         }
 
-        private List<Player> CreatePlayers()
+        public List<Player> CreatePlayers()
         {
             Console.WriteLine("Creating Players");
             

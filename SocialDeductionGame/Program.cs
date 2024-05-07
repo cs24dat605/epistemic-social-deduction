@@ -1,16 +1,18 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using SocialDeductionGame;
+﻿using SocialDeductionGame;
 using System.Text.Json;
+using SocialDeductionGame.Worlds;
 
 bool readingMode = true;
 
 for (int i = 0; i < 100; i++)
 {
+
     Game WerewolfGame = Game.Instance;
-    WerewolfGame.StartGame();
-
-
+    
+    Game.Instance.Players = Game.Instance.CreatePlayers();
+    List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
+    
+    WerewolfGame.StartGame(allWorlds);
 
     List<string> roles = new List<string>();
     string fileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "test.txt"));
