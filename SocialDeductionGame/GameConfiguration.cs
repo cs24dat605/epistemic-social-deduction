@@ -23,7 +23,7 @@ public class GameConfiguration
         Players = 10; // Default number of players
         //Mafia roles
         Godfather = 1; // Default number of Godfathers
-        Mafioso = 0; //Default number of Mafioso
+        Mafioso = 1; //Default number of Mafioso
         Consort = 0; // Default number of consorts
         Consigliere = 0; //Default number of Consiglieres
         Blackmailer = 0;
@@ -32,8 +32,8 @@ public class GameConfiguration
         Escort = 0; // Default number of escorts
         Veteran = 0;
         Vigilante = 0;
-        Doctor = 0;
-        Investigator = 1;
+        Doctor = 1;
+        Investigator = 0;
         Villagers = Players - Godfather - Mafioso - Consort - Consigliere - Blackmailer - Sheriffs - Escort - Veteran - Vigilante - Doctor - Investigator;
     }
     
