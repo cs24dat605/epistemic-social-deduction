@@ -6,9 +6,7 @@ bool readingMode = true;
 
 for (int i = 0; i < 100; i++)
 {
-
     Game WerewolfGame = Game.Instance;
-    
     Game.Instance.Players = Game.Instance.CreatePlayers();
     List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
     

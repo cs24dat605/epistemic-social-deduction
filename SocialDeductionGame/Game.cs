@@ -92,14 +92,12 @@ namespace SocialDeductionGame
 
             if (townWins)
             {
-                if (Game.Instance.shouldPrint)
-                    Console.WriteLine($"Town wins! Round:{_round}");
+                Console.WriteLine($"Town wins! Round:{_round}");
                 townWin = true;
             }
             else if (mafiaWins)
             {
-                if (Game.Instance.shouldPrint)
-                    Console.WriteLine($"Mafia wins! Round:{_round}");
+                Console.WriteLine($"Mafia wins! Round:{_round}");
                 townWin = false;
             }
 
