@@ -11,12 +11,12 @@ namespace SocialDeductionGame
         public GameConfiguration GameConfig = new GameConfiguration();
         public List<Player> Players { get; set; }
         
-        private int _round = 0;
+        private int _round;
 
         public int Round => _round;
 
         private static Game _instance;
-        private bool _gameFinished = false;
+        private bool _gameFinished;
 
         private long startTime = 0;
 
@@ -42,6 +42,7 @@ namespace SocialDeductionGame
         public void StartGame()
         {
             _gameFinished = false;
+            _round = 0;
             Players = CreatePlayers();
 
             var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
