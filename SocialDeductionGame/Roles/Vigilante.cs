@@ -76,20 +76,31 @@ public class Vigilante : Role, IRoleNightAction
         //Selecting a world at random from list
         bool candidatesFound = false;
         List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
+        int i = 0;
         while (!candidatesFound)
         {
             var random = new Random();
             int index = random.Next(worldList.Count);
 
             World SelectedWorld = worldList[index];
-            
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true))
+
+
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
             }
             if (selectedPlayers.Count > 0)
             {
                 candidatesFound = true;
+            }
+            else
+            {
+                i++;
+            }
+            if (worldList.Count < i)
+            {
+                //Makes it such that there are no infinite runs
+                return;
             }
         }
 
