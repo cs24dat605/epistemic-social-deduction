@@ -7,12 +7,11 @@ public class CommunicationManager
 {
     public void Communicate(Player player)
     {
-        // TODO maybe ask contradiction information here
-        // TODO maybe choose specific question later
         // Probability check if player should communicate
         if (!ProbabilityManager.ShouldEventOccur("Communicate"))
         {
-            Console.WriteLine($"Comm: {player.Name} decided not to communicate");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine($"Comm: {player.Name} decided not to communicate");
             return;
         }
         
@@ -49,7 +48,8 @@ public class CommunicationManager
             //        (inquirePlayer, pWorldId) = LogicManager.GetLeastInformationGainPlayer(player.PossibleWorlds);
         }
 
-        Console.WriteLine($"Comm: {question.GenerateText()}");
+        if (Game.Instance.shouldPrint)
+            Console.WriteLine($"Comm: {question.GenerateText()}");
 
         if (question.Responses != null && question.Responses.Count > 0)
         {
@@ -72,7 +72,9 @@ public class CommunicationManager
         Random random = new Random();
         Message response = question.Responses[random.Next(0, question.Responses.Count)];
         question.Response = response.Text;
-        Console.WriteLine($"Comm Response: {response.Text}");
+        
+        if (Game.Instance.shouldPrint)
+            Console.WriteLine($"Comm Response: {response.Text}");
         
         // Wait till response is added to update the world by message
         if (question.UpdateWorlds != null)

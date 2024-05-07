@@ -12,7 +12,8 @@ public static class WorldManager
     {
         if (File.Exists(worldFile))
         {
-            Console.WriteLine("Loading generated worlds from file!");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Loading generated worlds from file!");
             
             List<World> worlds = new List<World>();
 
@@ -70,9 +71,7 @@ public static class WorldManager
         if (Game.Instance.GameConfig.Consort != 0)      counts.Add(new Consort(), Game.Instance.GameConfig.Consort);
         if (Game.Instance.GameConfig.Consigliere != 0)  counts.Add(new Consigliere(), Game.Instance.GameConfig.Consigliere);
         if (Game.Instance.GameConfig.Blackmailer != 0)  counts.Add(new Blackmailer(), Game.Instance.GameConfig.Blackmailer);
-
-        Console.WriteLine(counts.Count);
-
+        
         Console.WriteLine("No generated worlds file was found!");
         Console.WriteLine("Generating worlds");
         

@@ -82,7 +82,11 @@ public class Sheriff : Role, IRoleNightAction
             selectedPlayer = selectedPlayers[indexVil];
             if (selectedPlayer.ActualPlayer.Name == player.Name)
             {
-                if (selectedPlayers.Count == 1) { Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self"); }
+                if (selectedPlayers.Count == 1)
+                {
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self");
+                }
                 else
                 {
                     {
@@ -107,7 +111,8 @@ public class Sheriff : Role, IRoleNightAction
         }
         else
         {
-            Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
         }
     }
 }

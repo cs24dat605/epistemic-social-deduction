@@ -83,7 +83,8 @@ public class Veteran : Role, IRoleNightAction
         }
         else
         {
-            Console.WriteLine("Veteran chose not to go alert this night");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Veteran chose not to go alert this night");
         }
     }
 }

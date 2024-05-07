@@ -63,7 +63,8 @@ public class Vigilante : Role, IRoleNightAction
         //2 indicates that he has to be twice as certain on these worlds than the rest.
         if (sortedWorlds[0].Marks == 0 || sortedWorlds[0].Marks == sortedWorlds[1].Marks || sortedWorlds[0].Marks < sortedWorlds[1].Marks * 2)
         {
-            Console.WriteLine("The Vigilante sleeps tonight");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("The Vigilante sleeps tonight");
             return;
         }
         
@@ -117,7 +118,11 @@ public class Vigilante : Role, IRoleNightAction
             selectedPlayer = selectedPlayers[indexVil];
             if (selectedPlayer.ActualPlayer.Name == player.Name)
             {
-                if (selectedPlayers.Count == 1) { Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self"); }
+                if (selectedPlayers.Count == 1)
+                {
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self");
+                }
                 else
                 {
                     {
@@ -139,7 +144,8 @@ public class Vigilante : Role, IRoleNightAction
         }
         else
         {
-            Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
         }
     }
 }

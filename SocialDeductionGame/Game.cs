@@ -11,12 +11,12 @@ namespace SocialDeductionGame
         public GameConfiguration GameConfig = new GameConfiguration();
         public List<Player> Players { get; set; }
         
-        private int _round = 0;
+        private int _round;
 
         public int Round => _round;
 
         private static Game _instance;
-        private bool _gameFinished = false;
+        private bool _gameFinished;
 
         private long startTime = 0;
 
@@ -26,7 +26,9 @@ namespace SocialDeductionGame
         public bool townWin = false;
 
         public List <int> correctVotes { get; set; }
-
+        
+        public bool shouldPrint = false;
+        
         public static Game Instance 
         {
             get 
@@ -39,19 +41,19 @@ namespace SocialDeductionGame
             }
         }
         
-        public void StartGame()
+        public void StartGame(List<World> allWorlds)
         {
             _gameFinished = false;
-            Players = CreatePlayers();
+            _round = 0;
 
             var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            
-            List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
-            Console.WriteLine($"Time taken to generate worlds: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
-            Console.WriteLine("Moving worlds to player");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Moving worlds to player");
             WorldManager.MoveWorldsToPlayers(allWorlds);
-            Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
+            
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
             startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
@@ -63,7 +65,8 @@ namespace SocialDeductionGame
             
             while (!_gameFinished)
             {
-                Console.WriteLine($"Round: {Round}");
+                if (Game.Instance.shouldPrint)
+                    Console.WriteLine($"Round: {Round}");
                 startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 
                 RunDayPhase();
@@ -75,7 +78,8 @@ namespace SocialDeductionGame
 
                 if (_gameFinished)
                 {
-                    Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
                     break;
                 }
             }
@@ -100,9 +104,10 @@ namespace SocialDeductionGame
             _gameFinished = townWins || mafiaWins;
         }
 
-        private List<Player> CreatePlayers()
+        public List<Player> CreatePlayers()
         {
-            Console.WriteLine("Creating Players");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Creating Players");
             
             List<Player> playerList = new List<Player>();
             List<Role> availableRoles = GameConfig.GetRoleCounts();
@@ -118,16 +123,13 @@ namespace SocialDeductionGame
                 
             }
             
-            // Players.Sort();
-            // TODO Need to sort somehow
-
-            // Console.WriteLine(playerList);
             return playerList;
         }
         
         private void RunDayPhase()
         {
-            Console.WriteLine("Day Phase");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Day Phase");
             
             // Preform day action before voting might need changing?
             foreach (Player player in Players.Where(player => player.IsAlive))
@@ -222,7 +224,8 @@ namespace SocialDeductionGame
                     {
                         correctVotes[i]++;
                     }
-                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 }
                 i++;
             }
@@ -270,7 +273,8 @@ namespace SocialDeductionGame
         
         private void RunNightPhase()
         {
-            Console.WriteLine("Night Phase");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Night Phase");
 
             List<Actions.Action> actions = new List<Actions.Action>();
 
