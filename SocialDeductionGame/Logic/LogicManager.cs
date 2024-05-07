@@ -177,7 +177,6 @@ public static class LogicManager
     
     public static PossiblePlayer GetPlayerToAsk(Player player, PossiblePlayer inquirePlayer, int pWorldID)
     {
-        Console.WriteLine($"pWorldID: {pWorldID} {player.PossibleWorlds[pWorldID]}");
         List<PossiblePlayer> players = player.PossibleWorlds[pWorldID].PossiblePlayers
             .Where(x => x != inquirePlayer && x.Name != player.Name)
             .ToList();
