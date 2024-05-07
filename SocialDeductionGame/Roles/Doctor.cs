@@ -1,23 +1,22 @@
-using SocialDeductionGame.Worlds;
-using Action = SocialDeductionGame.Actions.Action;
-
 namespace SocialDeductionGame.Roles;
+using Action = SocialDeductionGame.Actions.Action;
+using SocialDeductionGame.Worlds;
 
-public class Consort : Role, IRoleNightAction
+public class Doctor : Role, IRoleNightAction
 {
-    public Consort() 
+    public Doctor() 
     {
-        Name = "Consort";
-        IsTown = false;
+        Name = "Doctor";
+        IsTown = true;
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
     {
-        //Consort is the action blocker for the mafia
-        //Consort chooses one person, which cannot perform their night action
-        //Consort is immune to role block, meaning that an Escort cannot stop a Consort
+        //Doctor is the primary defensive for the town
+        //Doctor chooses one player to protect each night
+        //The doctor cannot save anyone from a veteran attack
 
-        //Assuming that the active world for any mafia class is only the worlds where they know the roles of each other
+        //Finding max possibility world
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
@@ -34,7 +33,7 @@ public class Consort : Role, IRoleNightAction
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
             {
                 sheriffAlive = true;
             }
@@ -46,13 +45,9 @@ public class Consort : Role, IRoleNightAction
 
         PossiblePlayer selectedPlayer = null;
 
-        //If the sheriff is dead
-        if (worldList.Count == 0)
+        //If the sheriff is alive
+        if (worldList.Count != 0)
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
-            {
-                worldList.Add(possibleWorld);
-            };
 
             //Selecting a world at random
             var random = new Random();
@@ -70,6 +65,10 @@ public class Consort : Role, IRoleNightAction
 
         else
         {
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+            {
+                worldList.Add(possibleWorld);
+            };
             //Selecting a world at random
             var random = new Random();
             int index = random.Next(worldList.Count);
@@ -77,8 +76,7 @@ public class Consort : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            //Targeting a random villager, except the escort, as escort cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.PossibleRole is not Escort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }
@@ -112,11 +110,12 @@ public class Consort : Role, IRoleNightAction
 
 
         //Announce Selected target to action handler
+        //Event role this time is mafioso ofc.
         if (selectedPlayer != null)
         {
             Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
-            Action action = new Action(player, "RoleBlock", target);
+            Action action = new Action(player, "Doctor", target);
 
             actions.Add(action);
 

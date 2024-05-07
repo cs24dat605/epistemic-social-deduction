@@ -3,19 +3,20 @@ using Action = SocialDeductionGame.Actions.Action;
 
 namespace SocialDeductionGame.Roles;
 
-public class Consort : Role, IRoleNightAction
+public class Blackmailer : Role, IRoleNightAction
 {
-    public Consort() 
+    public Blackmailer()
     {
-        Name = "Consort";
+        Name = "Blackmailer";
         IsTown = false;
+        checkedPlayers = new List<string>();
     }
 
     public void PerformNightAction(Player player, List<Action> actions)
     {
-        //Consort is the action blocker for the mafia
-        //Consort chooses one person, which cannot perform their night action
-        //Consort is immune to role block, meaning that an Escort cannot stop a Consort
+        //The Blackmailer is the mafia investigative role.
+        //The consigliere functions just like the sheriff
+
 
         //Assuming that the active world for any mafia class is only the worlds where they know the roles of each other
         List<World> worldList = new List<World>();
@@ -33,10 +34,11 @@ public class Consort : Role, IRoleNightAction
         //Looking checking if sheriff is alive
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
         {
+
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
             {
-                sheriffAlive = true;
+                if (!player.Role.checkedPlayers.Contains(possiblePlayer.ActualPlayer.Name)) { sheriffAlive = true; }
             }
             if (sheriffAlive)
             {
@@ -46,13 +48,9 @@ public class Consort : Role, IRoleNightAction
 
         PossiblePlayer selectedPlayer = null;
 
-        //If the sheriff is dead
-        if (worldList.Count == 0)
+        //If the sheriff is alive
+        if (worldList.Count != 0)
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
-            {
-                worldList.Add(possibleWorld);
-            };
 
             //Selecting a world at random
             var random = new Random();
@@ -70,6 +68,10 @@ public class Consort : Role, IRoleNightAction
 
         else
         {
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+            {
+                worldList.Add(possibleWorld);
+            };
             //Selecting a world at random
             var random = new Random();
             int index = random.Next(worldList.Count);
@@ -77,8 +79,7 @@ public class Consort : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            //Targeting a random villager, except the escort, as escort cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.PossibleRole is not Escort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
             }
@@ -116,9 +117,11 @@ public class Consort : Role, IRoleNightAction
         {
             Player target = new Player(selectedPlayer.ActualPlayer.Id, selectedPlayer.ActualPlayer.Role);
 
-            Action action = new Action(player, "RoleBlock", target);
+            Action action = new Action(player, "Blackmailer", target);
 
             actions.Add(action);
+
+            player.Role.checkedPlayers.Add(target.Name);
 
         }
         else
@@ -127,5 +130,4 @@ public class Consort : Role, IRoleNightAction
                 Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
         }
     }
-
 }

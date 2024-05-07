@@ -42,13 +42,13 @@ public class Sheriff : Role, IRoleNightAction
         //Selecting a world at random from list
         bool candidatesFound = false;
         List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
+        int i = 0;
         while (!candidatesFound)
         {
             var random = new Random();
             int index = random.Next(worldList.Count);
 
             World SelectedWorld = worldList[index];
-            
 
             foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
@@ -57,6 +57,15 @@ public class Sheriff : Role, IRoleNightAction
             if (selectedPlayers.Count > 0)
             {
                 candidatesFound = true;
+            }
+            else
+            {
+                i++;
+            }
+            if (worldList.Count < i)
+            {
+                //Makes it such that there are no infinite runs
+                return;
             }
         }
 
@@ -73,7 +82,11 @@ public class Sheriff : Role, IRoleNightAction
             selectedPlayer = selectedPlayers[indexVil];
             if (selectedPlayer.ActualPlayer.Name == player.Name)
             {
-                if (selectedPlayers.Count == 1) { Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self"); }
+                if (selectedPlayers.Count == 1)
+                {
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self");
+                }
                 else
                 {
                     {
@@ -98,7 +111,8 @@ public class Sheriff : Role, IRoleNightAction
         }
         else
         {
-            Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
         }
     }
 }

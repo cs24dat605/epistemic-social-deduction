@@ -1,4 +1,3 @@
-
 using SocialDeductionGame.Communication;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
@@ -7,8 +6,6 @@ namespace SocialDeductionGame.Logic;
 
 public static class LogicManager
 {
-    // TODO avoid choosing yourself when saying that another player is another role
-    // TODO avoid saying i am mafia etc
     public static (PossiblePlayer, int) GetHighestInformationGainPlayer(Player me, List<World> topWorlds)
     {
         if (nonAccusedPlayers.Count != 0 || Game.Instance.Round == 0)
@@ -21,7 +18,16 @@ public static class LogicManager
         }
 
         // 2. Otherwise, find player with most contradicting role information
-        return GetPlayerWithMostContradictingInfo(topWorlds, me);
+        (var pPlayer2, int pWorldId2) = GetPlayerWithMostContradictingInfo(topWorlds, me);
+        
+        if (pWorldId2 != -1)
+            return (pPlayer2, pWorldId2);
+
+        // 3. If no player found, return random player
+        Random random = new Random();
+        World pWorld = me.PossibleWorlds[random.Next(0, me.PossibleWorlds.Count)];
+        
+        return (pWorld.PossiblePlayers[random.Next(0, pWorld.PossiblePlayers.Count)], me.PossibleWorlds.IndexOf(pWorld));
     }
     
     private static List<PossiblePlayer> nonAccusedPlayers = new List<PossiblePlayer>();
@@ -219,5 +225,23 @@ public static class LogicManager
             return false;
         
         return true;
+    }
+
+    public static Role GetClaimRoleMafia(Player me)
+    {
+        // Sort the world by most likely
+        IOrderedEnumerable<World> sortedWorlds = me.PossibleWorlds.OrderByDescending(world => world.Marks);
+
+        // Find the first most likely world where the player is town
+        foreach (var world in sortedWorlds)
+        {
+            Role myRole = world.PossiblePlayers[me.Id].PossibleRole;
+            
+            if (myRole.IsTown)
+                return world.PossiblePlayers[me.Id].PossibleRole;
+        }
+
+        // This shouldn't occur
+        return new Villager();
     }
 }

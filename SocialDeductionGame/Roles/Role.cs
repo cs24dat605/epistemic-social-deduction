@@ -6,6 +6,7 @@ public abstract class Role
     public bool IsTown { get; set; }
     public bool forceAction { get; set; }
     public List<string>? checkedPlayers { get; set; }
+    public bool? blackmailed { get; set; }
 
     public virtual void PerformNightAction(List<Player> players) { }
     public virtual void PerformDayAction(List<Player> players) { }

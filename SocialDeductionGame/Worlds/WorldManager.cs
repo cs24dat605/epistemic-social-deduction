@@ -12,7 +12,8 @@ public static class WorldManager
     {
         if (File.Exists(worldFile))
         {
-            Console.WriteLine("Loading generated worlds from file!");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Loading generated worlds from file!");
             
             List<World> worlds = new List<World>();
 
@@ -56,19 +57,21 @@ public static class WorldManager
             return worlds;
         }
         
-        var counts = new Dictionary<Role, int>
-        {
-            { new Villager(), Game.Instance.GameConfig.Villagers }, 
-            { new Sheriff(), Game.Instance.GameConfig.Sheriffs },
-            { new Escort(), Game.Instance.GameConfig.Escort },
-            { new Vigilante(), Game.Instance.GameConfig.Vigilante },
-            { new Veteran(), Game.Instance.GameConfig.Veteran },
-            { new Godfather(), Game.Instance.GameConfig.Godfather },
-            { new Mafioso(), Game.Instance.GameConfig.Mafioso },
-            { new Consort(), Game.Instance.GameConfig.Consort },
-            { new Consigliere(), Game.Instance.GameConfig.Consigliere}
-        };
+        var counts = new Dictionary<Role, int>();
 
+        if (Game.Instance.GameConfig.Villagers != 0)    counts.Add(new Villager(), Game.Instance.GameConfig.Villagers);
+        if (Game.Instance.GameConfig.Sheriffs != 0)     counts.Add(new Sheriff(), Game.Instance.GameConfig.Sheriffs);
+        if (Game.Instance.GameConfig.Escort != 0)       counts.Add(new Escort(), Game.Instance.GameConfig.Escort);
+        if (Game.Instance.GameConfig.Vigilante != 0)    counts.Add(new Vigilante(), Game.Instance.GameConfig.Vigilante);
+        if (Game.Instance.GameConfig.Veteran != 0)      counts.Add(new Veteran(), Game.Instance.GameConfig.Veteran);
+        if (Game.Instance.GameConfig.Doctor != 0)       counts.Add(new Doctor(), Game.Instance.GameConfig.Doctor);
+        if (Game.Instance.GameConfig.Investigator != 0) counts.Add(new Investigator(), Game.Instance.GameConfig.Investigator);
+        if (Game.Instance.GameConfig.Godfather != 0)    counts.Add(new Godfather(), Game.Instance.GameConfig.Godfather);
+        if (Game.Instance.GameConfig.Mafioso != 0)      counts.Add(new Mafioso(), Game.Instance.GameConfig.Mafioso);
+        if (Game.Instance.GameConfig.Consort != 0)      counts.Add(new Consort(), Game.Instance.GameConfig.Consort);
+        if (Game.Instance.GameConfig.Consigliere != 0)  counts.Add(new Consigliere(), Game.Instance.GameConfig.Consigliere);
+        if (Game.Instance.GameConfig.Blackmailer != 0)  counts.Add(new Blackmailer(), Game.Instance.GameConfig.Blackmailer);
+        
         Console.WriteLine("No generated worlds file was found!");
         Console.WriteLine("Generating worlds");
         
@@ -111,29 +114,18 @@ public static class WorldManager
     
     public static void MoveWorldsToPlayers(List<World> worlds)
     {
-        List<World> worldCopy = new List<World>(worlds);
         foreach (var player in Game.Instance.Players)
         {
-            player.PossibleWorlds = new List<World>(worldCopy);
-            // player.PossibleWorlds = new List<World>(worldCopy.Select(world =>
-            // {
-            //     // Create a deep copy of the world
-            //     World worldCopyForPlayer = new World(new List<PossiblePlayer>(world.PossiblePlayers))
-            //     {
-            //         IsActive = world.IsActive,
-            //         Marks = world.Marks,
-            //         Accusations = new List<Message>(world.Accusations)
-            //     };
-            //
-            //     if (worldCopyForPlayer.PossiblePlayers[player.ID].PossibleRole.Name != player.Role.Name)
-            //     {
-            //         worldCopyForPlayer.IsActive = false;
-            //     }
-            //
-            //     return worldCopyForPlayer;
-            // }).ToList());
-            //
-            // Console.WriteLine($"{player.PossibleWorlds.Select(world => world.IsActive).ToList().Count}:{player.PossibleWorlds.Select(world => world.IsActive == false).ToList().Count}");
+            List<World> worldList = new List<World>();
+            
+            foreach (var world in worlds)
+            {
+                World worldCopy = new World(world.PossiblePlayers);
+
+                worldList.Add(worldCopy);
+            }
+
+            player.PossibleWorlds = worldList;
         }
     }
 

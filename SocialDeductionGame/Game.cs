@@ -1,6 +1,8 @@
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 using SocialDeductionGame.Actions;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace SocialDeductionGame
 {
@@ -9,15 +11,24 @@ namespace SocialDeductionGame
         public GameConfiguration GameConfig = new GameConfiguration();
         public List<Player> Players { get; set; }
         
-        private int _round = 0;
+        private int _round;
 
         public int Round => _round;
 
         private static Game _instance;
-        private bool _gameFinished = false;
+        private bool _gameFinished;
 
         private long startTime = 0;
 
+        //At the end of the game, if town has won, set to true
+        //else the mafia has won
+        //used for data collection
+        public bool townWin = false;
+
+        public List <int> correctVotes { get; set; }
+        
+        public bool shouldPrint = false;
+        
         public static Game Instance 
         {
             get 
@@ -30,39 +41,33 @@ namespace SocialDeductionGame
             }
         }
         
-        public void StartGame(int players = -1, int godfather = -1, int sheriffs = -1, int mafioso = -1, int escort = -1, int consort = -1)
+        public void StartGame(List<World> allWorlds)
         {
-            /*if (players != -1)
-            {
-                GameConfig.Players = players;
-                if (godfather != -1)
-                    GameConfig.Godfather = godfather;
-                if (sheriffs != -1)
-                    GameConfig.Sheriffs = sheriffs;
-                if (mafioso != -1)
-                    GameConfig.Mafioso = mafioso;
-                if (escort != -1)
-                    GameConfig.Escort = escort;
-                if (consort != -1)
-                   GameConfig.Consort = consort;
-            }*/
-            
-            Players = CreatePlayers();
+            _gameFinished = false;
+            _round = 0;
 
             var curTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            
-            List<World> allWorlds = WorldManager.LoadOrGenerateWorlds();
-            Console.WriteLine($"Time taken to generate worlds: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
-            Console.WriteLine("Moving worlds to player");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Moving worlds to player");
             WorldManager.MoveWorldsToPlayers(allWorlds);
-            Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
+            
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine($"Time taken to move to player: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - curTime}");
 
             startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
+            correctVotes = new List<int>();
+            for(int i = 0; i < Players.Count; i++)
+            {
+                correctVotes.Add(0);
+            }
+            
             while (!_gameFinished)
             {
-                Console.WriteLine($"Round: {Round}");
+                if (Game.Instance.shouldPrint)
+                    Console.WriteLine($"Round: {Round}");
+                startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 
                 RunDayPhase();
                 RunNightPhase();
@@ -73,7 +78,8 @@ namespace SocialDeductionGame
 
                 if (_gameFinished)
                 {
-                    Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine($"Game time taken: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
                     break;
                 }
             }
@@ -85,16 +91,23 @@ namespace SocialDeductionGame
             bool mafiaWins = Players.Count(p => p.IsAlive && !p.Role.IsTown) >= Players.Count(p => p.IsAlive && p.Role.IsTown);
 
             if (townWins)
+            {
                 Console.WriteLine($"Town wins! Round:{_round}");
+                townWin = true;
+            }
             else if (mafiaWins)
+            {
                 Console.WriteLine($"Mafia wins! Round:{_round}");
+                townWin = false;
+            }
 
             _gameFinished = townWins || mafiaWins;
         }
 
-        private List<Player> CreatePlayers()
+        public List<Player> CreatePlayers()
         {
-            Console.WriteLine("Creating Players");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Creating Players");
             
             List<Player> playerList = new List<Player>();
             List<Role> availableRoles = GameConfig.GetRoleCounts();
@@ -110,16 +123,13 @@ namespace SocialDeductionGame
                 
             }
             
-            // Players.Sort();
-            // TODO Need to sort somehow
-
-            // Console.WriteLine(playerList);
             return playerList;
         }
-
+        
         private void RunDayPhase()
         {
-            Console.WriteLine("Day Phase");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Day Phase");
             
             // Preform day action before voting might need changing?
             foreach (Player player in Players.Where(player => player.IsAlive))
@@ -133,14 +143,20 @@ namespace SocialDeductionGame
             Random random = new Random();
 
             // Allowing up to 3 communications per turn
-            for (var i = 0; i < 2; i++)
+            for (var _ = 0; _ < 2; _++)
             {
                 foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
                 {
+                    if (player.Role.blackmailed == null || player.Role.blackmailed == false)
                         player.Communicate();
                 }
             }
-            
+
+            foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
+            {
+                player.Role.blackmailed = false;
+            }
+
             // Voting stuff
             List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
             foreach (Player player in Players.Where (player => player.IsAlive == true))
@@ -148,6 +164,7 @@ namespace SocialDeductionGame
                 VotingPlayer voting = new VotingPlayer(player, 0);
                 votingPlayers.Add(voting);
             }
+            int i = 0;
             foreach (Player player in Players.Where(player => player.IsAlive == true))
             {
                 if (player.IsAlive)
@@ -164,11 +181,7 @@ namespace SocialDeductionGame
                     }
 
                     //Generating a list of all equally most possible worlds
-                    List<World> worldList = new List<World>();
-                    foreach(World world in player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true))
-                    {
-                        worldList.Add(world);
-                    }
+                    List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true)];
 
                     //Select at random which of the most likely worlds to choose
                     random = new Random();
@@ -200,11 +213,21 @@ namespace SocialDeductionGame
                         if (votingPlayer.VotedPlayer == SelectedPlayer.ActualPlayer)
                         {
                             votingPlayer.Votes++;
+
+                            //Data stuff
+                            break;
                         }
                     }
-                    
-                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
+
+                    if ((player.Role.IsTown && !SelectedPlayer.ActualPlayer.Role.IsTown) ||
+                                (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
+                    {
+                        correctVotes[i]++;
+                    }
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 }
+                i++;
             }
 
             //MaxVotes
@@ -219,15 +242,27 @@ namespace SocialDeductionGame
             }
 
             //Generating a list of all player that have gotten equal votes
-            List<VotingPlayer> TrialList = new List<VotingPlayer>();
+            List<VotingPlayer> TrialList = [.. votingPlayers.Where(Vp => Vp.Votes == MaxVotes)];
             if (TrialList.Count == 1)
             {
                 //Kill this player
+                foreach (Player p in Players.Where(p => p.IsAlive))
+                {
+                    foreach (World world in p.PossibleWorlds)
+                    {
+                        foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
+                        {
+                            possiblePlayer.IsAlive = false;
+                        }
+                    }
+                }
+                foreach (Player p in Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name))
+                {
+                    p.IsAlive = false;
+                }
+
             }
-            else
-            {
-                // Decide how to handle this
-            }
+            //If a majority vote has not been cast, no one is killed
 
             // Console.WriteLine("Marks");
             // foreach (World pWorlds in Players[0].PossibleWorlds)
@@ -238,7 +273,8 @@ namespace SocialDeductionGame
         
         private void RunNightPhase()
         {
-            Console.WriteLine("Night Phase");
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("Night Phase");
 
             List<Actions.Action> actions = new List<Actions.Action>();
 

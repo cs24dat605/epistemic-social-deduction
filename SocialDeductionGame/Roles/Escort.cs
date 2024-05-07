@@ -40,13 +40,14 @@ public class Escort : Role, IRoleNightAction
         //Selecting a world at random from list
         bool candidatesFound = false;
         List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
+        int i = 0;
         while (!candidatesFound)
         {
             var random = new Random();
             int index = random.Next(worldList.Count);
 
             World SelectedWorld = worldList[index];
-            
+
 
             //not targetting consorts, as they cannot be roleblocked
             foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.PossibleRole is not Consort && p.IsAlive == true))
@@ -57,8 +58,18 @@ public class Escort : Role, IRoleNightAction
             {
                 candidatesFound = true;
             }
+            else
+            {
+                i++;
+            }
+            if (worldList.Count < i)
+            {
+                //Makes it such that there are no infinite runs
+                return;
+            }
         }
-        
+
+
 
         //Selecting a random mafia role
         while (selectedPlayer == null) {
@@ -72,7 +83,11 @@ public class Escort : Role, IRoleNightAction
             selectedPlayer = selectedPlayers[indexVil];
             if(selectedPlayer.ActualPlayer.Name == player.Name) 
             {
-                if (selectedPlayers.Count == 1) { Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self"); }
+                if (selectedPlayers.Count == 1)
+                {
+                    if (Game.Instance.shouldPrint)
+                        Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self");
+                }
                 else
                 {
                     {
@@ -97,7 +112,8 @@ public class Escort : Role, IRoleNightAction
         }
         else
         {
-            Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
+            if (Game.Instance.shouldPrint)
+                Console.WriteLine("ERROR, target player not found for player: " + player.Name + " With the role: " + player.Role);
         }
     }
 
