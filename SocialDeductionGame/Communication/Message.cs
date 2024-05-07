@@ -11,6 +11,7 @@ public class Message
     public List<Message> Responses { get; }
     
     public Action<Message> UpdateWorlds { get; }
+    public int Type { get; }
     
     public string Response { get; set; }
 
@@ -22,14 +23,15 @@ public class Message
     public string Text { get; set; }
 
     public Message(MessageIntent intent, string template,
-        List<Message> responses = null, Action<Message> updateWorlds = null, Role role = null,
-        Player accuser = null, PossiblePlayer accused = null,
+        List<Message> responses = null, Action<Message> updateWorlds = null, int type = -1,
+        Role role = null, Player accuser = null, PossiblePlayer accused = null,
         PossiblePlayer playerAsk = null
     )
     {
         Intent = intent;
         Template = template;
         UpdateWorlds = updateWorlds;
+        Type = type;
 
         // Assign values to the class properties
         Role = role;
