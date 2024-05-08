@@ -134,3 +134,4 @@ _NCrunch*
 /.vs
 .idea
 /SocialDeductionGame/test.txt
+/SocialDeductionGame/worlds.json
