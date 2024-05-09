@@ -3,8 +3,9 @@ using System.Text.Json;
 using SocialDeductionGame.Worlds;
 
 bool readingMode = true;
+long startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-for (int i = 0; i < 1000; i++)
+for (int i = 0; i < 100; i++)
 {
     Game WerewolfGame = Game.Instance;
     Game.Instance.Players = Game.Instance.CreatePlayers();
@@ -96,3 +97,4 @@ for (int i = 0; i < 1000; i++)
         Console.WriteLine(Ex.ToString());
     }
 }
+Console.WriteLine($"time to complete: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
