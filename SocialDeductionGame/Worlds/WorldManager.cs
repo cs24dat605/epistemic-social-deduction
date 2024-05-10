@@ -129,52 +129,63 @@ public static class WorldManager
         }
     }
 
-    public static void UpdateWorldsByMessage(Message message, bool reverseMarks = false)
+    public static void UpdateThread(Player player, Message message, bool reverseMarks = false)
     {
-        foreach (var player in Game.Instance.Players)
-        {
-            if (!reverseMarks)
-                player.Accusations.Add(message);
+        if (!reverseMarks)
+            player.Accusations.Add(message);
             
-            foreach (var pWorld in player.PossibleWorlds)
-            {
-                // if (!pWorld.IsActive)
-                //     continue;
+        foreach (var pWorld in player.PossibleWorlds)
+        {
+            // if (!pWorld.IsActive)
+            //     continue;
                 
-                foreach (var pPlayer in pWorld.PossiblePlayers)
-                {
-                    // If pPlayer is not the accuser, skip
-                    if (message.Type == 0 && pPlayer.ActualPlayer != message.Accuser)
-                        continue;
+            foreach (var pPlayer in pWorld.PossiblePlayers)
+            {
+                // If pPlayer is not the accuser, skip
+                if (message.Type == 0 && pPlayer.ActualPlayer != message.Accuser)
+                    continue;
                     
-                    // If pPlayer is not the accused, skip
-                    if (message.Type is 1 or 2 or 3 && pPlayer != message.Accused)
-                        continue;
+                // If pPlayer is not the accused, skip
+                if (message.Type is 1 or 2 or 3 && pPlayer != message.Accused)
+                    continue;
                     
-                    bool isCorrect;
+                bool isCorrect;
                     
-                    // Check correct by if role matches world
-                    if (message.Type is 0 or 1 or 2)
-                        isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
+                // Check correct by if role matches world
+                if (message.Type is 0 or 1 or 2)
+                    isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
-                    // Flip statement by marking the opposite roles
-                    if (message.Type == 3 || message.Response == "No")
-                        isCorrect = pPlayer.PossibleRole.Name != message.Role.Name;
-                    else
-                        isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
+                // Flip statement by marking the opposite roles
+                if (message.Type == 3 || message.Response == "No")
+                    isCorrect = pPlayer.PossibleRole.Name != message.Role.Name;
+                else
+                    isCorrect = pPlayer.PossibleRole.Name == message.Role.Name;
                     
-                    // If we reverse the marks just flip iscorrect
-                    if (reverseMarks)
-                        isCorrect = !isCorrect;
+                // If we reverse the marks just flip iscorrect
+                if (reverseMarks)
+                    isCorrect = !isCorrect;
                     
-                    // Add or remove marks
-                    if (isCorrect)
-                        pWorld.Marks++;
-                    else
-                        pWorld.Marks--;
-                }
+                // Add or remove marks
+                if (isCorrect)
+                    pWorld.Marks++;
+                else
+                    pWorld.Marks--;
             }
         }
+    }
+
+    public static void UpdateWorldsByMessage(Message message, bool reverseMarks = false)
+    {
+        List<Thread>threads = new List<Thread>();
+        foreach (var player in Game.Instance.Players)
+        {
+            Thread t = new Thread(() => UpdateThread(player, message, reverseMarks));
+            threads.Add(t);
+            t.Start();
+        }
+        foreach (var thread in threads)
+            thread.Join();
+
     }
 
     public static void UpdateWorldByDeath(Player me)

@@ -3,6 +3,7 @@ using System.Text.Json;
 using SocialDeductionGame.Worlds;
 
 bool readingMode = true;
+long startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
 for (int i = 0; i < 100; i++)
 {
@@ -96,3 +97,4 @@ for (int i = 0; i < 100; i++)
         Console.WriteLine(Ex.ToString());
     }
 }
+Console.WriteLine($"time to complete: {DateTimeOffset.UtcNow.ToUnixTimeSeconds() - startTime}");
