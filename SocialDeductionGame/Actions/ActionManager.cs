@@ -499,6 +499,10 @@ public class ActionManager
                             foreach(PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == e))
                             {
                                 possiblePlayer.IsAlive = false;
+                                if (possiblePlayer.ActualPlayer.Role.Name != possiblePlayer.PossibleRole.Name)
+                                {
+                                    world.IsActive = false;
+                                }
                             }
                         }
                     }

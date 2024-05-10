@@ -27,7 +27,7 @@ namespace SocialDeductionGame
 
         public List <int> correctVotes { get; set; }
         
-        public bool shouldPrint = false;
+        public bool shouldPrint = true;
         
         public static Game Instance 
         {
@@ -258,8 +258,24 @@ namespace SocialDeductionGame
                 }
                 foreach (Player p in Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name))
                 {
+                    foreach (Player player in Players.Where(player => player.IsAlive == true))
+                    {
+                        foreach (World world in p.PossibleWorlds)
+                        {
+                            foreach(PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
+                            {
+                                if (possiblePlayer.PossibleRole.Name != possiblePlayer.ActualPlayer.Role.Name)
+                                {
+                                    world.IsActive = false;
+                                }
+                            }
+                        }
+                    }
                     p.Kill();
+
+                    
                 }
+                
 
             }
             //If a majority vote has not been cast, no one is killed
