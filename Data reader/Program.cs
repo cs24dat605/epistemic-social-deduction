@@ -9,6 +9,7 @@ Dictionary<string, int> teamScores = new Dictionary<string, int>
 };
 
 List<int> survivability = new List<int>();
+List<int> surviveTeamWin = new List<int>();
 List<string> roles = new List<string>();
 List<int> votes = new List<int>();
 
@@ -31,10 +32,13 @@ using (StreamReader sr = new StreamReader(filePath))
             {
                 roles.Add(s);
                 survivability.Add(0);
+                surviveTeamWin.Add(0);
                 votes.Add(0);
+
             }
         }
-        teamScores[parts[i + 1].Replace("Winning team: ", "").Replace("\"", "").Replace("\r", "")] += 1;
+        string winningTeam = parts[i + 1].Replace("Winning team: ", "").Replace("\"", "").Replace("\r", "");
+        teamScores[winningTeam] += 1;
         int rounds = int.Parse(parts[i + 2].Replace("Number of Rounds: ", "").Replace("\"", "").Replace("\r", ""));
         string[] buffer = parts[i + 3].Replace("Active Worlds pr. player: ", "").Replace("\"", "").Replace("\r", "").Replace("[", "").Replace("]", "").Split(",");
         int[] worldPrPlayer = new int[buffer.Length];
@@ -55,6 +59,32 @@ using (StreamReader sr = new StreamReader(filePath))
         {
             correctVotes[j] = int.Parse(buffer[j]);
             votes[j] += int.Parse(buffer[j]);
+        }
+
+        
+        for (int j = 0; j < buffer.Length; j++)
+        {
+            bool isTown = true;
+            switch (roles[j])
+            {
+                case "Blackmailer":
+                case "Consigliere":
+                case "Godfather":
+                case "Mafioso":
+                    isTown = false;
+                    break;
+                default: break;
+            }
+            if(isTown && winningTeam == "Town" && alivePlayers[j])
+            {
+                
+                surviveTeamWin[j]++;
+                
+            }
+            else if(!isTown && winningTeam == "Mafia" && alivePlayers[j])
+            {
+                surviveTeamWin[j]++;   
+            }
         }
 
     }
@@ -87,6 +117,6 @@ for(int i = 0; i < roles.Count; i++)
     }
     double town = teamScores["Town"];
     double mafia = teamScores["Mafia"];
-    Console.WriteLine("Player:" + roles[i].PadRight(12) + "Total times survived: " + survivability[i].ToString().PadRight(6) + "Survivalrate: " + Math.Round(((survivability[i] / total) * 100), 2).ToString().PadRight(6) + "Total correct votes: " + votes[i].ToString().PadRight(6) + "Survivalrate on team win: " + (isTown ? Math.Round((survivability[i] / town) * 100, 2).ToString().PadRight(6) : Math.Round((survivability[i] / mafia) * 100, 2).ToString().PadRight(6)));
+    Console.WriteLine("Player:" + roles[i].PadRight(12) + "Total times survived: " + survivability[i].ToString().PadRight(6) + "Survivalrate: " + Math.Round(((survivability[i] / total) * 100), 2).ToString().PadRight(6) + "Total correct votes: " + votes[i].ToString().PadRight(6) + "Survivalrate on team win: " + (isTown ? Math.Round((surviveTeamWin[i] / town) * 100, 2).ToString().PadRight(6) : Math.Round((surviveTeamWin[i] / mafia) * 100, 2).ToString().PadRight(6)));
 
 }

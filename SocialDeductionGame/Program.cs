@@ -4,7 +4,7 @@ using SocialDeductionGame.Worlds;
 
 bool readingMode = true;
 
-for (int i = 0; i < 1000; i++)
+for (int i = 0; i < 100; i++)
 {
     Game WerewolfGame = Game.Instance;
     Game.Instance.Players = Game.Instance.CreatePlayers();
