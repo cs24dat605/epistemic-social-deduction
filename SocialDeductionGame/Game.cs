@@ -202,7 +202,7 @@ namespace SocialDeductionGame
             int i = 0;
 
             
-            foreach (Player player in Players.Where(player => player.IsAlive == true))
+            foreach (Player player in Players.Where(player => player.IsAlive == true).OrderBy(_ => random.Next()))
             {
                 
 
