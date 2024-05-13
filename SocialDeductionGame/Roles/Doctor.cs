@@ -76,7 +76,7 @@ public class Doctor : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true && p.ActualPlayer.Name != player.Name))
             {
                 selectedPlayers.Add(p);
             }
@@ -95,8 +95,7 @@ public class Doctor : Role, IRoleNightAction
                 {
                     if (selectedPlayers.Count == 1)
                     {
-                        if (Game.Instance.shouldPrint)
-                            Console.WriteLine("PLAYER: " + selectedPlayer.ActualPlayer.Name + " could only target self");
+                        break;
                     }
                     else
                     {
