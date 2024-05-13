@@ -35,7 +35,7 @@ public class Vigilante : Role, IRoleNightAction
         
         var sortedWorlds = player.PossibleWorlds
             .Where(world => world.IsActive)
-            .OrderByDescending(world => world.Marks) 
+            .OrderBy(world => world.Marks) 
             .ToList(); 
 
         // //Finding max possibility world
@@ -56,7 +56,7 @@ public class Vigilante : Role, IRoleNightAction
         //     {
         //         SecondMax = possibleWorld.Marks;
         //     }
-        // }
+        //}
         
         //Vigilante has to be certain on his action, as it can mean life or death
         //How certain has the vigilante be for him to shoot?

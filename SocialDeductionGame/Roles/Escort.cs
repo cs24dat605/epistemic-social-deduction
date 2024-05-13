@@ -19,17 +19,17 @@ public class Escort : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = Int32.MinValue;
+        int Min = Int32.MaxValue;
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.Marks > Max)
+            if (possibleWorld.Marks < Min)
             {
-                Max = possibleWorld.Marks;
+                Min = possibleWorld.Marks;
             }
         };
 
         //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
         {
             worldList.Add(possibleWorld);
         };
