@@ -196,6 +196,11 @@ namespace SocialDeductionGame
                         {
                             playerList.Add(susPlayer);
                         }
+                        if(playerList.Count == 0)
+                        {
+                            int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
+                            playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                        }
                     }
                     else 
                     {
@@ -203,7 +208,13 @@ namespace SocialDeductionGame
                         {
                             playerList.Add(susPlayer);
                         }
+                        if (playerList.Count == 0)
+                        {
+                            int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
+                            playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                        }
                     }
+
 
                     index = random.Next(playerList.Count);
                     PossiblePlayer SelectedPlayer = playerList[index];
