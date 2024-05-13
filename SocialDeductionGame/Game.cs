@@ -192,14 +192,14 @@ namespace SocialDeductionGame
                     List<PossiblePlayer> playerList = new List<PossiblePlayer>();
                     if (player.Role.IsTown)
                     {
-                        foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false))
+                        foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false && susPlayer.IsAlive  == true))
                         {
                             playerList.Add(susPlayer);
                         }
                     }
                     else 
                     {
-                        foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true))
+                        foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true && susPlayer.IsAlive == true))
                         {
                             playerList.Add(susPlayer);
                         }
