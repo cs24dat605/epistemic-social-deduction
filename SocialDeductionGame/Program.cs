@@ -5,7 +5,7 @@ using SocialDeductionGame.Worlds;
 bool readingMode = true;
 long startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-for (int i = 0; i < 79; i++)
+for (int i = 0; i < 100; i++)
 {
     Game WerewolfGame = Game.Instance;
     Game.Instance.Players = Game.Instance.CreatePlayers();
