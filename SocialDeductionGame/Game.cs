@@ -169,19 +169,19 @@ namespace SocialDeductionGame
             {
                 if (player.IsAlive)
                 {
-                    int MaxPossiblescore = Int32.MinValue;
+                    int MinPossiblescore = Int32.MaxValue;
 
                     //MaxPossible score
                     foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
                     {
-                        if(MaxPossiblescore < world.Marks)
+                        if(MinPossiblescore > world.Marks)
                         {
-                            MaxPossiblescore = world.Marks;
+                            MinPossiblescore = world.Marks;
                         }
                     }
 
                     //Generating a list of all equally most possible worlds
-                    List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MaxPossiblescore && world.IsActive == true)];
+                    List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)];
 
                     //Select at random which of the most likely worlds to choose
                     random = new Random();

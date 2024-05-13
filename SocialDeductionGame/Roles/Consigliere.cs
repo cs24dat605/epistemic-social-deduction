@@ -22,17 +22,17 @@ public class Consigliere : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = Int32.MinValue;
+        int Min = Int32.MaxValue;
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.Marks > Max)
+            if (possibleWorld.Marks < Min)
             {
-                Max = possibleWorld.Marks;
+                Min = possibleWorld.Marks;
             }
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
         {
 
             bool sheriffAlive = false;
@@ -68,7 +68,7 @@ public class Consigliere : Role, IRoleNightAction
 
         else
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
             {
                 worldList.Add(possibleWorld);
             };

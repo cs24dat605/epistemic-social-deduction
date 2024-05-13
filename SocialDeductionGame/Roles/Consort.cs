@@ -21,17 +21,17 @@ public class Consort : Role, IRoleNightAction
         List<World> worldList = new List<World>();
 
         //Finding max possibility world
-        int Max = Int32.MinValue;
+        int Min = Int32.MaxValue;
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
         {
-            if (possibleWorld.Marks > Max)
+            if (possibleWorld.Marks < Min)
             {
-                Max = possibleWorld.Marks;
+                Min = possibleWorld.Marks;
             }
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
         {
             bool sheriffAlive = false;
             foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
@@ -49,7 +49,7 @@ public class Consort : Role, IRoleNightAction
         //If the sheriff is dead
         if (worldList.Count == 0)
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Max))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
             {
                 worldList.Add(possibleWorld);
             };
