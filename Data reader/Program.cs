@@ -71,6 +71,7 @@ using (StreamReader sr = new StreamReader(filePath))
                 case "Consigliere":
                 case "Godfather":
                 case "Mafioso":
+                case "Consort":
                     isTown = false;
                     break;
                 default: break;
@@ -111,6 +112,7 @@ for(int i = 0; i < roles.Count; i++)
         case "Consigliere":
         case "Godfather":
         case "Mafioso":
+        case "Consort":
             isTown = false;
             break;
         default: break;
