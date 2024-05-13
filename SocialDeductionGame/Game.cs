@@ -27,7 +27,7 @@ namespace SocialDeductionGame
 
         public List <int> correctVotes { get; set; }
         
-        public bool shouldPrint = true;
+        public bool shouldPrint = false;
         
         public static Game Instance 
         {
@@ -62,7 +62,43 @@ namespace SocialDeductionGame
             {
                 correctVotes.Add(0);
             }
-            
+
+            int x = 0;
+            List<int> y = new List<int>();
+            foreach(var player in Players) 
+            {
+                if(!player.Role.IsTown)
+                {
+                    y.Add(x);
+                }
+                foreach(var world in player.PossibleWorlds)
+                {
+                    if (world.PossiblePlayers[x].PossibleRole.Name != player.Role.Name)
+                    {
+                        world.IsActive = false;
+                    }
+                }
+                x++;
+            }
+            foreach (var player in Players)
+            {
+                if (!player.Role.IsTown)
+                {
+                    break;
+                }
+                foreach (var world in player.PossibleWorlds)
+                {
+                    foreach(int k in y)
+                    {
+                        if (!world.PossiblePlayers[k].PossibleRole.IsTown)
+                        {
+                            world.IsActive = false;
+                        }
+                    }
+                }
+               
+            }
+
             while (!_gameFinished)
             {
                 if (Game.Instance.shouldPrint)
