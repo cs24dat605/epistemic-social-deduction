@@ -82,7 +82,7 @@ namespace SocialDeductionGame
             }
             foreach (var player in Players)
             {
-                if (!player.Role.IsTown)
+                if (player.Role.IsTown)
                 {
                     break;
                 }
@@ -96,7 +96,6 @@ namespace SocialDeductionGame
                         }
                     }
                 }
-               
             }
 
             while (!_gameFinished)
@@ -201,8 +200,12 @@ namespace SocialDeductionGame
                 votingPlayers.Add(voting);
             }
             int i = 0;
+
+            
             foreach (Player player in Players.Where(player => player.IsAlive == true))
             {
+                
+
                 if (player.IsAlive)
                 {
                     int MinPossiblescore = Int32.MaxValue;
