@@ -203,86 +203,82 @@ namespace SocialDeductionGame
                 VotingPlayer voting = new VotingPlayer(player, 0);
                 votingPlayers.Add(voting);
             }
-            int i = 0;
+            
 
             
             foreach (Player player in Players.Where(player => player.IsAlive == true).OrderBy(_ => random.Next()))
             {
                 
+                int MinPossiblescore = Int32.MaxValue;
 
-                if (player.IsAlive)
+                //MaxPossible score
+                foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
                 {
-                    int MinPossiblescore = Int32.MaxValue;
-
-                    //MaxPossible score
-                    foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
+                    if(MinPossiblescore > world.Marks)
                     {
-                        if(MinPossiblescore > world.Marks)
-                        {
-                            MinPossiblescore = world.Marks;
-                        }
+                        MinPossiblescore = world.Marks;
                     }
-
-                    //Generating a list of all equally most possible worlds
-                    List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)];
-
-                    //Select at random which of the most likely worlds to choose
-                    random = new Random();
-                    int index = random.Next(0, worldList.Count);
-
-                    World SelectedWorld = worldList[index];
-
-                    List<PossiblePlayer> playerList = new List<PossiblePlayer>();
-                    if (player.Role.IsTown)
-                    {
-                        foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false && susPlayer.IsAlive  == true))
-                        {
-                            playerList.Add(susPlayer);
-                        }
-                        if(playerList.Count == 0)
-                        {
-                            int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
-                            playerList.Add(SelectedWorld.PossiblePlayers[x]);
-                        }
-                    }
-                    else 
-                    {
-                        foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true && susPlayer.IsAlive == true))
-                        {
-                            playerList.Add(susPlayer);
-                        }
-                        if (playerList.Count == 0)
-                        {
-                            int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
-                            playerList.Add(SelectedWorld.PossiblePlayers[x]);
-                        }
-                    }
-
-
-                    index = random.Next(playerList.Count);
-                    PossiblePlayer SelectedPlayer = playerList[index];
-
-                    foreach (VotingPlayer votingPlayer in votingPlayers)
-                    {
-                        if (votingPlayer.VotedPlayer == SelectedPlayer.ActualPlayer)
-                        {
-                            votingPlayer.Votes++;
-
-                            //Data stuff
-                            break;
-                        }
-                    }
-
-                    amountOfVotes[i]++;
-
-                    if ((player.Role.IsTown && !SelectedPlayer.ActualPlayer.Role.IsTown) ||
-                                (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
-                    {
-                        correctVotes[i]++;
-                    }
-                    if (Game.Instance.shouldPrint)
-                        Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 }
+
+                //Generating a list of all equally most possible worlds
+                List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)];
+
+                //Select at random which of the most likely worlds to choose
+                random = new Random();
+                int index = random.Next(0, worldList.Count);
+
+                World SelectedWorld = worldList[index];
+
+                List<PossiblePlayer> playerList = new List<PossiblePlayer>();
+                if (player.Role.IsTown)
+                {
+                    foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false && susPlayer.IsAlive  == true))
+                    {
+                        playerList.Add(susPlayer);
+                    }
+                    if(playerList.Count == 0)
+                    {
+                        int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
+                        playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                    }
+                }
+                else 
+                {
+                    foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true && susPlayer.IsAlive == true))
+                    {
+                        playerList.Add(susPlayer);
+                    }
+                    if (playerList.Count == 0)
+                    {
+                        int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
+                        playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                    }
+                }
+
+
+                index = random.Next(playerList.Count);
+                PossiblePlayer SelectedPlayer = playerList[index];
+
+                foreach (VotingPlayer votingPlayer in votingPlayers)
+                {
+                    if (votingPlayer.VotedPlayer.Name == SelectedPlayer.ActualPlayer.Name)
+                    {
+                        votingPlayer.Votes++;
+
+                        //Data stuff
+                        break;
+                    }
+                }
+                int i = player.Id;
+                amountOfVotes[i]++;
+
+                if ((player.Role.IsTown && !SelectedPlayer.ActualPlayer.Role.IsTown) ||
+                            (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
+                {
+                    correctVotes[i]++;
+                }
+                if (Game.Instance.shouldPrint)
+                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
                 i++;
             }
 
