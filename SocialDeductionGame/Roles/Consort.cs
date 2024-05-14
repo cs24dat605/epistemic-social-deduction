@@ -34,7 +34,7 @@ public class Consort : Role, IRoleNightAction
         foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
         {
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.ActualPlayer is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole.Name == "Sheriff"))
             {
                 sheriffAlive = true;
             }
@@ -78,7 +78,7 @@ public class Consort : Role, IRoleNightAction
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
             //Targeting a random villager, except the escort, as escort cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.PossibleRole is not Escort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.PossibleRole.Name != "Escort" && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }

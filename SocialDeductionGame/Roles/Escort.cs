@@ -50,7 +50,7 @@ public class Escort : Role, IRoleNightAction
 
 
             //not targetting consorts, as they cannot be roleblocked
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.PossibleRole is not Consort && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == false && p.PossibleRole.Name != "Consort" && p.IsAlive == true))
             {
                 selectedPlayers.Add(p);
             }

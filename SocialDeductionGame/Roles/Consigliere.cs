@@ -36,7 +36,7 @@ public class Consigliere : Role, IRoleNightAction
         {
 
             bool sheriffAlive = false;
-            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole is Sheriff))
+            foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole.Name == "Sheriff"))
             {
                 if (!player.Role.checkedPlayers.Contains(possiblePlayer.ActualPlayer.Name)) { sheriffAlive = true; }
             }
@@ -58,7 +58,7 @@ public class Consigliere : Role, IRoleNightAction
 
             World SelectedWorld = worldList[index];
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole is Sheriff && p.IsAlive == true))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.Name == "Sheriff" && p.IsAlive == true))
             {
                 //Selecting the last sheriff (if there is more than one) 
                 //TODO: Make it such that the sheriff that is chosen is the sheriff that has the most amount of marks
