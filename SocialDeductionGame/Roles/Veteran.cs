@@ -22,7 +22,7 @@ public class Veteran : Role, IRoleNightAction
 
         //Finding max possibility world
         int Min = Int32.MaxValue;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds)
         {
             if (possibleWorld.Marks > Min)
             {
@@ -31,7 +31,7 @@ public class Veteran : Role, IRoleNightAction
         };
 
         //Selecting all worlds with max possibility
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.Marks == Min))
         {
                 worldList.Add(possibleWorld);
         };
