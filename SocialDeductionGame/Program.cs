@@ -60,6 +60,13 @@ for (int i = 0; i < 100; i++)
     }
     string jsonPlayerAlive = JsonSerializer.Serialize(playerAlive);
 
+    List<string> amountOfVotes = new List<string>();
+    foreach (var c in WerewolfGame.amountOfVotes)
+    {
+        amountOfVotes.Add(c.ToString());
+    }
+    string JsonAmountOfVotes = JsonSerializer.Serialize(amountOfVotes);
+
     List<string> correctVotes = new List<string>();
     foreach (var c in WerewolfGame.correctVotes)
     {
@@ -78,7 +85,8 @@ for (int i = 0; i < 100; i++)
                                     "Number of Rounds: " + jsonRoundCount + "\n" +
                                     "Active Worlds pr. player: " + jsonActiveWorlds + "\n" +
                                     "Alive players: " + jsonPlayerAlive + "\n" +
-                                    "Number of correct votes: " + jsonCorrectVotes);
+                                    "Number of correct votes: " + jsonCorrectVotes + "\n" +
+                                    "Number of votes: " + JsonAmountOfVotes);
             }
             else
             {

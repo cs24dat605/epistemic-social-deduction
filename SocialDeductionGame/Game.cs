@@ -26,6 +26,8 @@ namespace SocialDeductionGame
         public bool townWin = false;
 
         public List <int> correctVotes { get; set; }
+
+        public List <int> amountOfVotes { get; set; }
         
         public bool shouldPrint = false;
         
@@ -58,9 +60,11 @@ namespace SocialDeductionGame
             startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             correctVotes = new List<int>();
+            amountOfVotes = new List<int>();
             for(int i = 0; i < Players.Count; i++)
             {
                 correctVotes.Add(0);
+                amountOfVotes.Add(0);
             }
 
             int x = 0;
@@ -90,7 +94,7 @@ namespace SocialDeductionGame
                 {
                     foreach(int k in y)
                     {
-                        if (!world.PossiblePlayers[k].PossibleRole.IsTown)
+                        if (world.PossiblePlayers[k].PossibleRole.IsTown)
                         {
                             world.IsActive = false;
                         }
@@ -268,6 +272,8 @@ namespace SocialDeductionGame
                             break;
                         }
                     }
+
+                    amountOfVotes[i]++;
 
                     if ((player.Role.IsTown && !SelectedPlayer.ActualPlayer.Role.IsTown) ||
                                 (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
