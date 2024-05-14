@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace SocialDeductionGame.Roles;
 using Action = SocialDeductionGame.Actions.Action;
 using SocialDeductionGame.Worlds;
@@ -10,7 +12,7 @@ public class Doctor : Role, IRoleNightAction
         IsTown = true;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Doctor is the primary defensive for the town
         //Doctor chooses one player to protect each night

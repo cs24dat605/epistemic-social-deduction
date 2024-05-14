@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace SocialDeductionGame.Roles;
 using Action = SocialDeductionGame.Actions.Action;
 using SocialDeductionGame.Worlds;
@@ -10,7 +12,7 @@ public class Mafioso : Role, IRoleNightAction
         IsTown = false;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Mafioso has to do the killing on behalf of the Godfather
         //In case the godfather is killed or otherwise disrupted, the Mafioso has to target a villager in the same manner as the Godfather

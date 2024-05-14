@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 
@@ -11,7 +12,7 @@ public class Godfather : Role, IRoleNightAction
         IsTown = false;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Godfather rules over the mafia
         //Godfather determines who the mafia should kill

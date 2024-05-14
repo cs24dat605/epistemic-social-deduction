@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 using SocialDeductionGame.Actions;
@@ -13,7 +14,7 @@ public class Vigilante : Role, IRoleNightAction
         forceAction = false;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Vigilante is the primary killer for the town.
         //The vigilantes powers are however very limited,

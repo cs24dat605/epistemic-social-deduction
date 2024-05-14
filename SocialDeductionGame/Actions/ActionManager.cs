@@ -1,20 +1,21 @@
-﻿using SocialDeductionGame.Roles;
+﻿using System.Collections.Concurrent;
+using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 
 namespace SocialDeductionGame.Actions;
 
 public class ActionManager
 {
-    public List<Action> Actions { get; set; }
+    public ConcurrentBag<Action> Actions { get; set; }
     public bool? missFireByVigilante { get; set; } 
-    public ActionManager(List<Action> actions)
+    public ActionManager(ConcurrentBag<Action> actions)
     {
         Actions = actions;
     }
     
     public void AddAction(Action action)
     {
-        this.Actions.Add(action);
+        Actions.Add(action);
     }
 
     public void HandleActions(List<Player> players)
@@ -24,7 +25,7 @@ public class ActionManager
         List<string> killTargets = new List<string>();
         List<string> doctorProtected = new List<string>();
 
-        foreach (var e in this.Actions)
+        foreach (var e in Actions)
         {
             actions.Add(e);
         }

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 
@@ -11,7 +12,7 @@ public class Veteran : Role, IRoleNightAction
         IsTown = true;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Veteran is a schizofrenic maniac, that will kill anyone that visits him.
         //This includes both team memebers and enemies

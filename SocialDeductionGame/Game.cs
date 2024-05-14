@@ -1,8 +1,10 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 using SocialDeductionGame.Actions;
 using System.Collections.Generic;
 using System.Numerics;
+using Action = SocialDeductionGame.Actions.Action;
 
 namespace SocialDeductionGame
 {
@@ -198,30 +200,30 @@ namespace SocialDeductionGame
 
             // Voting stuff
             List<VotingPlayer> votingPlayers = new List<VotingPlayer>();
-            foreach (Player player in Players.Where (player => player.IsAlive == true))
+            foreach (Player player in Players.Where (player => player.IsAlive))
             {
                 VotingPlayer voting = new VotingPlayer(player, 0);
                 votingPlayers.Add(voting);
             }
-            
 
-            
-            foreach (Player player in Players.Where(player => player.IsAlive == true).OrderBy(_ => random.Next()))
+            Parallel.ForEach(Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()), player =>
             {
-                
                 int MinPossiblescore = Int32.MaxValue;
 
                 //MaxPossible score
-                foreach (World world in player.PossibleWorlds.Where(world => world.IsActive == true))
+                foreach (World world in player.PossibleWorlds.Where(world => world.IsActive))
                 {
-                    if(MinPossiblescore > world.Marks)
+                    if (MinPossiblescore > world.Marks)
                     {
                         MinPossiblescore = world.Marks;
                     }
                 }
 
                 //Generating a list of all equally most possible worlds
-                List<World> worldList = [.. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)];
+                List<World> worldList =
+                [
+                    .. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)
+                ];
 
                 //Select at random which of the most likely worlds to choose
                 random = new Random();
@@ -232,21 +234,23 @@ namespace SocialDeductionGame
                 List<PossiblePlayer> playerList = new List<PossiblePlayer>();
                 if (player.Role.IsTown)
                 {
-                    foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == false && susPlayer.IsAlive  == true))
+                    foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer =>
+                                 susPlayer.PossibleRole.IsTown == false && susPlayer.IsAlive == true))
                     {
                         playerList.Add(susPlayer);
                     }
-                    if(playerList.Count == 0)
+                    if (playerList.Count == 0)
                     {
-                        foreach(PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.IsAlive))
+                        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.IsAlive))
                         {
                             playerList.Add(p);
                         }
                     }
                 }
-                else 
+                else
                 {
-                    foreach(PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer => susPlayer.PossibleRole.IsTown == true && susPlayer.IsAlive == true))
+                    foreach (PossiblePlayer susPlayer in SelectedWorld.PossiblePlayers.Where(susPlayer =>
+                                 susPlayer.PossibleRole.IsTown && susPlayer.IsAlive))
                     {
                         playerList.Add(susPlayer);
                     }
@@ -267,24 +271,26 @@ namespace SocialDeductionGame
                 {
                     if (votingPlayer.VotedPlayer.Name == SelectedPlayer.ActualPlayer.Name)
                     {
-                        votingPlayer.Votes++;
+                        votingPlayer.IncrementVote();
 
                         //Data stuff
                         break;
                     }
                 }
+
                 int i = player.Id;
                 amountOfVotes[i]++;
 
                 if ((player.Role.IsTown && !SelectedPlayer.ActualPlayer.Role.IsTown) ||
-                            (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
+                    (!player.Role.IsTown && SelectedPlayer.ActualPlayer.Role.IsTown))
                 {
                     correctVotes[i]++;
                 }
+
                 if (Game.Instance.shouldPrint)
-                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name + " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
-                i++;
-            }
+                    Console.WriteLine("I " + player.Name + " am voting for " + SelectedPlayer.Name +
+                                      " because I think they are a " + SelectedPlayer.PossibleRole.Name + "");
+            });
 
             //MaxVotes
             int MaxVotes = 0;
@@ -313,24 +319,22 @@ namespace SocialDeductionGame
                         }
                     }
                 });
-                foreach (Player p in Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name))
+                Parallel.ForEach(Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name && p.IsAlive), p =>
                 {
-                    Parallel.ForEach(Players.Where(player => player.IsAlive), player =>
+                    foreach (World world in p.PossibleWorlds)
                     {
-                        foreach (World world in p.PossibleWorlds)
+                        foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer =>
+                                     possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
                         {
-                            foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer =>
-                                         possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
+                            if (possiblePlayer.PossibleRole.Name != possiblePlayer.ActualPlayer.Role.Name)
                             {
-                                if (possiblePlayer.PossibleRole.Name != possiblePlayer.ActualPlayer.Role.Name)
-                                {
-                                    world.IsActive = false;
-                                }
+                                world.IsActive = false;
                             }
                         }
-                    });
+                    }
+
                     p.Kill();
-                }
+                });
             }
             //If a majority vote has not been cast, no one is killed
 
@@ -343,24 +347,26 @@ namespace SocialDeductionGame
         
         private void RunNightPhase()
         {
+            long starttime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             if (Game.Instance.shouldPrint)
                 Console.WriteLine("Night Phase");
-
-            List<Actions.Action> actions = new List<Actions.Action>();
-
-            foreach (var player in Players)
+            
+            ConcurrentBag<Action> actions = new ConcurrentBag<Action>();
+            
+            
+            Parallel.ForEach(Players, player =>
             {
                 if (player is { IsAlive: true, Role: IRoleNightAction nightAction })
                 {
-                    nightAction.PerformNightAction(player, actions); 
-                    
-                    
+                    nightAction.PerformNightAction(player, actions);
                 }
-            }
+            }); 
 
             ActionManager actionManager = new ActionManager(actions);
 
             actionManager.HandleActions(Players);
+            if (shouldPrint)
+                Console.WriteLine($"Nighttime: {Convert.ToDouble(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - starttime)/1000}s");
         }
     }
 };

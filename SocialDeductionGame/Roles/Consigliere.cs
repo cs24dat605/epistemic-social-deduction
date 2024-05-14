@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 
@@ -12,7 +13,7 @@ public class Consigliere : Role, IRoleNightAction
         checkedPlayers = new List<string>();
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //The Consigliere is the mafia investigative role.
         //The consigliere functions just like the sheriff
@@ -23,7 +24,7 @@ public class Consigliere : Role, IRoleNightAction
 
         //Finding max possibility world
         int Min = Int32.MaxValue;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive))
         {
             if (possibleWorld.Marks < Min)
             {
@@ -32,7 +33,7 @@ public class Consigliere : Role, IRoleNightAction
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive && possibleWorld.Marks == Min))
         {
 
             bool sheriffAlive = false;
@@ -79,7 +80,7 @@ public class Consigliere : Role, IRoleNightAction
             World SelectedWorld = worldList[index];
             List<PossiblePlayer> selectedPlayers = new List<PossiblePlayer>();
 
-            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown == true && p.IsAlive == true && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
+            foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.PossibleRole.IsTown && p.IsAlive && !player.Role.checkedPlayers.Contains(p.ActualPlayer.Name)))
             {
                 selectedPlayers.Add(p);
             }

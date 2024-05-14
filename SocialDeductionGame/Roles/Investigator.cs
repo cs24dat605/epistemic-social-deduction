@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 
@@ -12,7 +13,7 @@ public class Investigator : Role, IRoleNightAction
         checkedPlayers = new List<string>();
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Investigator is the primary information gatherer for the town
         //Investigator chooses to see one persons roles

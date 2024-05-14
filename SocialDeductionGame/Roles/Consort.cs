@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SocialDeductionGame.Worlds;
 using Action = SocialDeductionGame.Actions.Action;
 
@@ -11,7 +12,7 @@ public class Consort : Role, IRoleNightAction
         IsTown = false;
     }
 
-    public void PerformNightAction(Player player, List<Action> actions)
+    public void PerformNightAction(Player player, ConcurrentBag<Action> actions)
     {
         //Consort is the action blocker for the mafia
         //Consort chooses one person, which cannot perform their night action
