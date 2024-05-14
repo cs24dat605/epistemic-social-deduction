@@ -24,7 +24,7 @@ public class Veteran : Role, IRoleNightAction
         int Min = Int32.MaxValue;
         foreach (World possibleWorld in player.PossibleWorlds)
         {
-            if (possibleWorld.Marks > Min)
+            if (possibleWorld.Marks < Min)
             {
                 Min = possibleWorld.Marks;
             }
