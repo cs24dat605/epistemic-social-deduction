@@ -185,7 +185,7 @@ namespace SocialDeductionGame
             for (var _ = 0; _ < 2; _++)
             {
                 foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
-                {
+                {   
                     if (player.Role.blackmailed == null || player.Role.blackmailed == false)
                         player.Communicate();
                 }
@@ -298,23 +298,25 @@ namespace SocialDeductionGame
             if (TrialList.Count == 1)
             {
                 //Kill this player
-                foreach (Player p in Players.Where(p => p.IsAlive))
+                Parallel.ForEach(Players.Where(p => p.IsAlive), player =>
                 {
-                    foreach (World world in p.PossibleWorlds)
+                    foreach (World world in player.PossibleWorlds)
                     {
-                        foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
+                        foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer =>
+                                     possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
                         {
                             possiblePlayer.IsAlive = false;
                         }
                     }
-                }
+                });
                 foreach (Player p in Players.Where(p => p.Name == TrialList[0].VotedPlayer.Name))
                 {
-                    foreach (Player player in Players.Where(player => player.IsAlive == true))
+                    Parallel.ForEach(Players.Where(player => player.IsAlive), player =>
                     {
                         foreach (World world in p.PossibleWorlds)
                         {
-                            foreach(PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer => possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
+                            foreach (PossiblePlayer possiblePlayer in world.PossiblePlayers.Where(possiblePlayer =>
+                                         possiblePlayer.Name == TrialList[0].VotedPlayer.Name))
                             {
                                 if (possiblePlayer.PossibleRole.Name != possiblePlayer.ActualPlayer.Role.Name)
                                 {
@@ -322,13 +324,9 @@ namespace SocialDeductionGame
                                 }
                             }
                         }
-                    }
+                    });
                     p.Kill();
-
-                    
                 }
-                
-
             }
             //If a majority vote has not been cast, no one is killed
 
