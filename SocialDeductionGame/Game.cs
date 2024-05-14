@@ -238,8 +238,10 @@ namespace SocialDeductionGame
                     }
                     if(playerList.Count == 0)
                     {
-                        int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
-                        playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                        foreach(PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.IsAlive))
+                        {
+                            playerList.Add(p);
+                        }
                     }
                 }
                 else 
@@ -250,8 +252,10 @@ namespace SocialDeductionGame
                     }
                     if (playerList.Count == 0)
                     {
-                        int x = random.Next(0, SelectedWorld.PossiblePlayers.Count);
-                        playerList.Add(SelectedWorld.PossiblePlayers[x]);
+                        foreach (PossiblePlayer p in SelectedWorld.PossiblePlayers.Where(p => p.IsAlive))
+                        {
+                            playerList.Add(p);
+                        }
                     }
                 }
 
