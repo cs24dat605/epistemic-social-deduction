@@ -4,6 +4,12 @@ using SocialDeductionGame.Worlds;
 
 bool readingMode = true;
 long startTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+string fileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "results.txt"));
+
+if (File.Exists(fileName))
+{
+    File.Delete(fileName);
+}
 
 for (int i = 0; i < 100; i++)
 {
@@ -14,7 +20,6 @@ for (int i = 0; i < 100; i++)
     WerewolfGame.StartGame(allWorlds);
 
     List<string> roles = new List<string>();
-    string fileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "results.txt"));
     //Start by adding all roles to the string
     foreach (var p in WerewolfGame.Players)
     {
