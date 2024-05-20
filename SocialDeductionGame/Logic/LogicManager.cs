@@ -56,12 +56,27 @@ public static class LogicManager
             };
 
             // Find the player in the list using the copy
-            PossiblePlayer playerToRemove = nonAccusedPlayers.Find(player => player.Id == accusedPlayerCopy.Id);
-
-            // Remove the player if found
-            if (playerToRemove != null)
+            if(nonAccusedPlayers.Count != 0) 
             {
-                nonAccusedPlayers.Remove(playerToRemove);
+                bool error = true;
+                foreach (PossiblePlayer player in nonAccusedPlayers)
+                {
+                    if(player.Id == accusedPlayerCopy.Id)
+                    {
+                        error = false;
+                        break;
+                    }
+                }
+                if (!error)
+                {
+                    PossiblePlayer playerToRemove = nonAccusedPlayers.Find(player => player.Id == accusedPlayerCopy.Id);
+
+                    // Remove the player if found
+                    if (playerToRemove != null)
+                    {
+                        nonAccusedPlayers.Remove(playerToRemove);
+                    }
+                }
             }
         }
 
@@ -73,7 +88,7 @@ public static class LogicManager
 
         // Randomly choose a non-accused player
         Random random = new Random();
-        if (nonAccusedPlayers.Count != 0)
+        if (nonAccusedPlayers.Count != 0 && nonAccusedPlayers != null)
         {
             int randomIndex = random.Next(0, nonAccusedPlayers.Count);
             PossiblePlayer nonAccusedPlayer = nonAccusedPlayers[randomIndex];

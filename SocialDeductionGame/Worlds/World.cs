@@ -10,6 +10,10 @@ public class World
     
     [JsonIgnore]
     public bool IsActive { get; set; }
+
+    [JsonIgnore]
+    public bool IsPrivateActive { get; set; }
+
     [JsonIgnore]
     public int Marks { get; set; }
     
@@ -17,6 +21,7 @@ public class World
     {
         PossiblePlayers = players;
         IsActive = true;
+        IsPrivateActive = true;
         Marks = 0;
     }
 }

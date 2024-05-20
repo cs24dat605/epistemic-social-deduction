@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using SocialDeductionGame.Roles;
 using SocialDeductionGame.Worlds;
 using SocialDeductionGame.Actions;
+using SocialDeductionGame.Logic;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Numerics;
 using Action = SocialDeductionGame.Actions.Action;
@@ -81,7 +83,7 @@ namespace SocialDeductionGame
                 {
                     if (world.PossiblePlayers[x].PossibleRole.Name != player.Role.Name)
                     {
-                        world.IsActive = false;
+                        world.IsPrivateActive = false;
                     }
                 }
                 x++;
@@ -98,7 +100,7 @@ namespace SocialDeductionGame
                     {
                         if (world.PossiblePlayers[k].PossibleRole.IsTown)
                         {
-                            world.IsActive = false;
+                            world.IsPrivateActive = false;
                         }
                     }
                 }
@@ -172,15 +174,6 @@ namespace SocialDeductionGame
             if (Game.Instance.shouldPrint)
                 Console.WriteLine("Day Phase");
             
-            // Preform day action before voting might need changing?
-            foreach (Player player in Players.Where(player => player.IsAlive))
-            {
-                if (player is {Role: IRoleDayAction dayAction})
-                {
-                    dayAction.PerformDayAction(Players);
-                }
-            }
-            
             Random random = new Random();
 
             // Allowing up to 3 communications per turn
@@ -193,7 +186,7 @@ namespace SocialDeductionGame
                 }
             }
 
-            foreach (Player player in Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()))
+            foreach (Player player in Players)
             {
                 player.Role.blackmailed = false;
             }
@@ -206,12 +199,15 @@ namespace SocialDeductionGame
                 votingPlayers.Add(voting);
             }
 
-            Parallel.ForEach(Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()), player =>
+            Parallel.ForEach(Players.Where(player => player.IsAlive).OrderBy(_ => random.Next()), (player, state) =>
             {
+                if (player == null)
+                    state.Break();
+                    
                 int MinPossiblescore = Int32.MaxValue;
 
                 //MaxPossible score
-                foreach (World world in player.PossibleWorlds.Where(world => world.IsActive))
+                foreach (World world in player.PossibleWorlds.Where(world => world.IsPrivateActive))
                 {
                     if (MinPossiblescore > world.Marks)
                     {
@@ -222,9 +218,10 @@ namespace SocialDeductionGame
                 //Generating a list of all equally most possible worlds
                 List<World> worldList =
                 [
-                    .. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsActive == true)
+                    .. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsPrivateActive == true)
                 ];
 
+                (PossiblePlayer test, int fix) = LogicManager.GetHighestInformationGainPlayer(player, worldList);
                 //Select at random which of the most likely worlds to choose
                 random = new Random();
                 int index = random.Next(0, worldList.Count);
@@ -329,6 +326,7 @@ namespace SocialDeductionGame
                             if (possiblePlayer.PossibleRole.Name != possiblePlayer.ActualPlayer.Role.Name)
                             {
                                 world.IsActive = false;
+                                world.IsPrivateActive = false;
                             }
                         }
                     }

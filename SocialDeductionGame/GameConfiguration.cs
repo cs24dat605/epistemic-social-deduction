@@ -20,10 +20,10 @@ public class GameConfiguration
 
     public GameConfiguration()
     {
-        Players = 10; // Default number of players
+        Players = 5; // Default number of players
         //Mafia roles
         Godfather = 1; // Default number of Godfathers
-        Mafioso = 1; //Default number of Mafioso
+        Mafioso = 0; //Default number of Mafioso
         Consort = 0; // Default number of consorts
         Consigliere = 0; //Default number of Consiglieres
         Blackmailer = 0;

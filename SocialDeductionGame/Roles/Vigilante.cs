@@ -35,13 +35,13 @@ public class Vigilante : Role, IRoleNightAction
         List<World> worldList = new List<World>();
         
         var sortedWorlds = player.PossibleWorlds
-            .Where(world => world.IsActive)
+            .Where(world => world.IsPrivateActive)
             .OrderBy(world => world.Marks) 
             .ToList(); 
 
         // //Finding max possibility world
         // int Max = Int32.MinValue;
-        // foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        // foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true))
         // {
         //     if (possibleWorld.Marks > Max)
         //     {
@@ -51,7 +51,7 @@ public class Vigilante : Role, IRoleNightAction
         //
         // //Finding world with second highest possiblity
         // int SecondMax = 0;
-        // foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks < Max))
+        // foreach(World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true && possibleWorld.Marks < Max))
         // {
         //     if (possibleWorld.Marks > SecondMax)
         //     {
@@ -70,7 +70,7 @@ public class Vigilante : Role, IRoleNightAction
         }
         
         worldList = player.PossibleWorlds
-            .Where(possibleWorld => possibleWorld.IsActive && possibleWorld.Marks == sortedWorlds[0].Marks)
+            .Where(possibleWorld => possibleWorld.IsPrivateActive && possibleWorld.Marks == sortedWorlds[0].Marks)
             .ToList(); // Materialize the list
 
         PossiblePlayer selectedPlayer = null;

@@ -24,7 +24,7 @@ public class Blackmailer : Role, IRoleNightAction
 
         //Finding max possibility world
         int Min = Int32.MaxValue;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true))    
         {
             if (possibleWorld.Marks < Min)
             {
@@ -33,7 +33,7 @@ public class Blackmailer : Role, IRoleNightAction
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true && possibleWorld.Marks == Min))
         {
 
             bool sheriffAlive = false;
@@ -69,7 +69,7 @@ public class Blackmailer : Role, IRoleNightAction
 
         else
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true && possibleWorld.Marks == Min))
             {
                 worldList.Add(possibleWorld);
             };

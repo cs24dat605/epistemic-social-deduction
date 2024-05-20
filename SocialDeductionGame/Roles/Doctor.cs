@@ -23,7 +23,7 @@ public class Doctor : Role, IRoleNightAction
 
         //Finding max possibility world
         int Min = Int32.MaxValue;
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true))
         {
             if (possibleWorld.Marks < Min)
             {
@@ -32,7 +32,7 @@ public class Doctor : Role, IRoleNightAction
         };
 
         //Looking checking if sheriff is alive
-        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+        foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true && possibleWorld.Marks == Min))
         {
             bool sheriffAlive = false;
             foreach (PossiblePlayer possiblePlayer in possibleWorld.PossiblePlayers.Where(possiblePlayer => possiblePlayer.IsAlive == true && possiblePlayer.PossibleRole.Name == "Sheriff"))
@@ -67,7 +67,7 @@ public class Doctor : Role, IRoleNightAction
 
         else
         {
-            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsActive == true && possibleWorld.Marks == Min))
+            foreach (World possibleWorld in player.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true && possibleWorld.Marks == Min))
             {
                 worldList.Add(possibleWorld);
             };
