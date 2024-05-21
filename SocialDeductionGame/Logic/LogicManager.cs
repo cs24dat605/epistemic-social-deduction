@@ -8,10 +8,10 @@ public static class LogicManager
 {
     public static (PossiblePlayer, int) GetHighestInformationGainPlayer(Player me, List<World> topWorlds)
     {
+        List<PossiblePlayer> nonAccusedPlayers = new List<PossiblePlayer>();
         if (nonAccusedPlayers.Count != 0 || Game.Instance.Round == 0)
         {
             (var pPlayer, int pWorldId) = GetNonAccusationPlayer(me);
-            
             // 1. If player without accusation found return them
             if (pWorldId != -1)
                 return (pPlayer, pWorldId);
@@ -30,10 +30,11 @@ public static class LogicManager
         return (pWorld.PossiblePlayers[random.Next(0, pWorld.PossiblePlayers.Count)], me.PossibleWorlds.IndexOf(pWorld));
     }
     
-    private static List<PossiblePlayer> nonAccusedPlayers = new List<PossiblePlayer>();
+    
 
     public static (PossiblePlayer?, int) GetNonAccusationPlayer(Player me)
     {
+        List<PossiblePlayer> nonAccusedPlayers = new List<PossiblePlayer>();
         if (Game.Instance.Round != 0 && nonAccusedPlayers.Count == 0)
             return (null, -1);
 
@@ -42,7 +43,8 @@ public static class LogicManager
         {
             foreach (PossiblePlayer player in me.PossibleWorlds[0].PossiblePlayers)
             {
-                nonAccusedPlayers.Add(player);
+                if(player != null)
+                    nonAccusedPlayers.Add(player);
             }
         }
 
@@ -58,24 +60,12 @@ public static class LogicManager
             // Find the player in the list using the copy
             if(nonAccusedPlayers.Count != 0) 
             {
-                bool error = true;
-                foreach (PossiblePlayer player in nonAccusedPlayers)
-                {
-                    if(player.Id == accusedPlayerCopy.Id)
-                    {
-                        error = false;
-                        break;
-                    }
-                }
-                if (!error)
-                {
-                    PossiblePlayer playerToRemove = nonAccusedPlayers.Find(player => player.Id == accusedPlayerCopy.Id);
+                PossiblePlayer playerToRemove = nonAccusedPlayers.Find(player => player.Id == accusedPlayerCopy.Id);
 
-                    // Remove the player if found
-                    if (playerToRemove != null)
-                    {
-                        nonAccusedPlayers.Remove(playerToRemove);
-                    }
+                // Remove the player if found
+                if (playerToRemove != null)
+                {
+                    nonAccusedPlayers.Remove(playerToRemove);
                 }
             }
         }
@@ -216,7 +206,7 @@ public static class LogicManager
                 Message defendMessage = CommunicationTemplates.Messages.First(t => t.Intent == MessageIntent.Defend);
                 
                 // Deep copy
-                Message defendMessageCopy = new Message(defendMessage.Intent, defendMessage.Text, defendMessage.Responses, defendMessage.UpdateWorlds);
+                Message defendMessageCopy = new Message(defendMessage.Intent, defendMessage.Text, defendMessage.Responses, defendMessage.UpdateWorlds, defendMessage.Type);
                 return defendMessageCopy;
             }
         }
@@ -230,7 +220,7 @@ public static class LogicManager
         ];
         
         // Deep copy
-        var templateCopy = new Message(template.Intent, template.Text, template.Responses, template.UpdateWorlds);
+        var templateCopy = new Message(template.Intent, template.Text, template.Responses, template.UpdateWorlds, template.Type);
         return templateCopy;
     }
 

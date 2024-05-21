@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using SocialDeductionGame.Roles;
+using SocialDeductionGame.Communication;
 
 namespace SocialDeductionGame.Worlds;
 
@@ -23,6 +24,9 @@ public class PossiblePlayer
     
     [JsonIgnore]
     public int Id => ActualPlayer.Id;
+
+    [JsonIgnore]
+    public List<Message> Accusations => ActualPlayer.Accusations;
     
     public PossiblePlayer(Role role, Player player)
     {

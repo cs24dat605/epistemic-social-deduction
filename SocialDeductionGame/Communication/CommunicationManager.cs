@@ -1,5 +1,6 @@
 using SocialDeductionGame.Logic;
 using SocialDeductionGame.Worlds;
+using System.Numerics;
 
 namespace SocialDeductionGame.Communication;
 
@@ -72,9 +73,69 @@ public class CommunicationManager
 
     public void RequestResponse(Message question)
     {
-        Random random = new Random();
-        Message response = question.Responses[random.Next(0, question.Responses.Count)];
-        question.Response = response.Text;
+        int Min = Int32.MaxValue;
+        foreach (World possibleWorld in question.PlayerAsk.ActualPlayer.PossibleWorlds.Where(possibleWorld => possibleWorld.IsPrivateActive == true))
+        {
+            if (possibleWorld.Marks < Min)
+            {
+                Min = possibleWorld.Marks;
+            }
+        };
+
+        World selectedWorld = question.PlayerAsk.ActualPlayer.PossibleWorlds.Find(possibleWorld => possibleWorld.Marks == Min);
+
+        Message response = null;
+
+        //ask for roles
+        if (question.Type == 2)
+        {
+            //If mafia member
+            if (!question.Accused.ActualPlayer.Role.IsTown && response == null)
+            {
+                Random random = new Random();
+                response = question.Responses[random.Next(0, question.Responses.Count)];
+                question.Response = response.Text;
+            }
+            else
+                for (int i = 0;  i < question.Responses.Count; i++)
+                {
+                    if (question.Responses[i].Role.Name == question.Accused.ActualPlayer.Role.Name)
+                    {
+                        response = question.Responses[i];
+                        question.Response = response.Text;
+                        break;
+                    }
+                    
+                }
+        }
+        //ask yes or no
+        else if (response == null)
+        {
+            //If mafia member
+            if (!question.PlayerAsk.ActualPlayer.Role.IsTown && response == null)
+            {
+                Random random = new Random();
+                response = question.Responses[random.Next(0, question.Responses.Count)];
+                question.Response = response.Text;
+            }
+            else
+            {
+                if (selectedWorld.PossiblePlayers.Find(player => player.PossibleRole.Name == question.Role.Name && player.Id == question.Accused.Id) != null)
+                {
+                    response = question.Responses[0];
+                    question.Response = response.Text;
+                }
+                else
+                {
+                    response = question.Responses[1];
+                    question.Response = response.Text;
+                }
+            }
+            
+            
+        }
+        
+        
         
         if (Game.Instance.shouldPrint)
             Console.WriteLine($"Comm Response: {response.Text}");

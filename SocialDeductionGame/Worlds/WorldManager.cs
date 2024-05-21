@@ -177,14 +177,10 @@ public static class WorldManager
     public static void UpdateWorldsByMessage(Message message, bool reverseMarks = false)
     {
         List<Thread>threads = new List<Thread>();
-        foreach (var player in Game.Instance.Players)
+        Parallel.ForEach((Game.Instance.Players), player =>
         {
-            Thread t = new Thread(() => UpdateThread(player, message, reverseMarks));
-            threads.Add(t);
-            t.Start();
-        }
-        foreach (var thread in threads)
-            thread.Join();
+            UpdateThread(player, message, reverseMarks);
+        });
 
     }
 

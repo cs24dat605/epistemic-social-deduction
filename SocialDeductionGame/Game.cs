@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Numerics;
 using Action = SocialDeductionGame.Actions.Action;
+using SocialDeductionGame.Communication;
 
 namespace SocialDeductionGame
 {
@@ -220,13 +221,11 @@ namespace SocialDeductionGame
                 [
                     .. player.PossibleWorlds.Where(world => world.Marks == MinPossiblescore && world.IsPrivateActive == true)
                 ];
-
-                (PossiblePlayer test, int fix) = LogicManager.GetHighestInformationGainPlayer(player, worldList);
-                //Select at random which of the most likely worlds to choose
                 random = new Random();
                 int index = random.Next(0, worldList.Count);
 
                 World SelectedWorld = worldList[index];
+
 
                 List<PossiblePlayer> playerList = new List<PossiblePlayer>();
                 if (player.Role.IsTown)
@@ -260,9 +259,61 @@ namespace SocialDeductionGame
                     }
                 }
 
+                List<int> marks = new List<int>();
+                int suspectIndex = 0; 
+                foreach (var p in playerList)
+                {
+                    if (playerList.Count == 0)
+                        break;
+                    marks.Add(0);
+                    foreach (var a in player.Accusations)
+                    {
+                        switch(a.Type)
+                        {
+                            case 0:
+                                break;
+                            case 1:
+                                if(a.Accuser.Id == p.Id)
+                                {
+                                    PossiblePlayer accused = SelectedWorld.PossiblePlayers.Find(accused => accused.Id == a.Accused.Id && accused.PossibleRole.IsTown != a.Role.IsTown);
+                                    if (accused != null)
+                                        marks[suspectIndex]++;
+                                }
+                                break;
+                            case 2:
+                                if(a.Accused.Id == p.Id)
+                                {
+                                    PossiblePlayer accused = SelectedWorld.PossiblePlayers.Find(accused => accused.Id == p.Id && a.Role.IsTown != p.PossibleRole.IsTown);
+                                    if (accused != null)
+                                        marks[suspectIndex]++;
+                                }
+                                break;
+                            case 3:
+                                if(a.PlayerAsk.Id == p.Id)
+                                {
+                                    if (a.Response == "Yes")
+                                    {
+                                        PossiblePlayer accused = SelectedWorld.PossiblePlayers.Find(accused => accused.Id == a.Accused.Id && a.Role.Name != accused.PossibleRole.Name);
+                                        if (accused != null)
+                                            marks[suspectIndex]++;
+                                    }
+                                    else
+                                    {
+                                        PossiblePlayer accused = SelectedWorld.PossiblePlayers.Find(accused => accused.Id == a.Accused.Id && a.Role.Name == accused.PossibleRole.Name);
+                                        if (accused != null)
+                                            marks[suspectIndex]++;
+                                    }
+                                }
+                                break;
+                        }
+                        
+                    }
+                    suspectIndex++;
+                }
 
-                index = random.Next(playerList.Count);
-                PossiblePlayer SelectedPlayer = playerList[index];
+                //int maxMarkIndex = marks.IndexOf(marks.Max());
+                int maxMarkIndex = random.Next(playerList.Count);
+                PossiblePlayer SelectedPlayer = playerList[maxMarkIndex];
 
                 foreach (VotingPlayer votingPlayer in votingPlayers)
                 {
