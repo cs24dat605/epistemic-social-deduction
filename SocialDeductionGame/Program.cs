@@ -11,7 +11,7 @@ if (File.Exists(fileName))
     File.Delete(fileName);
 }
 
-for (int i = 0; i < 100000; i++)
+for (int i = 0; i < 1000; i++)
 {
     Game WerewolfGame = Game.Instance;
     Game.Instance.Players = Game.Instance.CreatePlayers();

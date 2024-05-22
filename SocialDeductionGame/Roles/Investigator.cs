@@ -60,14 +60,14 @@ public class Investigator : Role, IRoleNightAction
             {
                 candidatesFound = true;
             }
-            else
-            {
-                i++;
-            }
-            if(worldList.Count < i)
+            if (worldList.Count < i)
             {
                 //Makes it such that there are no infinite runs
                 return;
+            }
+            else
+            {
+                i++;
             }
         }
 
