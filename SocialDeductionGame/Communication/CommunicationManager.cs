@@ -18,7 +18,7 @@ public class CommunicationManager
         
         //List<World> possibleWorlds = player.PossibleWorlds;
         List<World> possibleWorlds = (from world in player.PossibleWorlds
-                                     where world.IsActive
+                                     where world.IsPrivateActive
                                      select world).ToList();
         
         int numWorlds = (int)Math.Ceiling(possibleWorlds.Count * 0.01);

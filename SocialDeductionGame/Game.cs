@@ -117,6 +117,7 @@ namespace SocialDeductionGame
                 RunNightPhase();
                 
                 CheckIfFinished();
+
                 
                 _round++;
 

@@ -127,7 +127,7 @@ public static class LogicManager
         // Iterate through top worlds and count role occurrences for each player
         foreach (var world in topWorlds)
         {
-            if (!world.IsActive)
+            if (!world.IsPrivateActive)
                 continue;
             
             foreach (var possiblePlayer in world.PossiblePlayers.Where(p => p.ActualPlayer != me && p.IsAlive))
