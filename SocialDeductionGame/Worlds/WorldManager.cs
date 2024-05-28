@@ -71,6 +71,7 @@ public static class WorldManager
         if (Game.Instance.GameConfig.Consort != 0)      counts.Add(new Consort(), Game.Instance.GameConfig.Consort);
         if (Game.Instance.GameConfig.Consigliere != 0)  counts.Add(new Consigliere(), Game.Instance.GameConfig.Consigliere);
         if (Game.Instance.GameConfig.Blackmailer != 0)  counts.Add(new Blackmailer(), Game.Instance.GameConfig.Blackmailer);
+        if (Game.Instance.GameConfig.MafiaVillager != 0) counts.Add(new MafiaVillager(), Game.Instance.GameConfig.MafiaVillager);
         
         Console.WriteLine("No generated worlds file was found!");
         Console.WriteLine("Generating worlds");

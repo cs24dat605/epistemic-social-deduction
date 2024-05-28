@@ -206,12 +206,12 @@ namespace SocialDeductionGame
                 if (player == null)
                     state.Break();
                     
-                int MinPossiblescore = Int32.MaxValue;
+                int MinPossiblescore = Int32.MinValue;
 
                 //MaxPossible score
                 foreach (World world in player.PossibleWorlds.Where(world => world.IsPrivateActive))
                 {
-                    if (MinPossiblescore > world.Marks)
+                    if (MinPossiblescore < world.Marks)
                     {
                         MinPossiblescore = world.Marks;
                     }

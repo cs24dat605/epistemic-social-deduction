@@ -10,6 +10,7 @@ public class GameConfiguration
     public int Consort { get; set; }
     public int Consigliere { get; set; }
     public int Blackmailer {  get; set; }
+    public int MafiaVillager { get; set; }
     public int Sheriffs { get; set; }
     public int Escort { get; set; } 
     public int Vigilante { get; set; }
@@ -22,19 +23,20 @@ public class GameConfiguration
     {
         Players = 10; // Default number of players
         //Mafia roles
-        Godfather = 1; // Default number of Godfathers
-        Mafioso = 1; //Default number of Mafioso
+        Godfather = 0; // Default number of Godfathers
+        Mafioso = 0; //Default number of Mafioso
         Consort = 0; // Default number of consorts
         Consigliere = 0; //Default number of Consiglieres
         Blackmailer = 0;
+        MafiaVillager = 3;
         //Town roles
-        Sheriffs = 1; // Default number of Sheriffs
+        Sheriffs = 0; // Default number of Sheriffs
         Escort = 0; // Default number of escorts
         Veteran = 0;
         Vigilante = 0;
-        Doctor = 1;
+        Doctor = 0;
         Investigator = 0;
-        Villagers = Players - Godfather - Mafioso - Consort - Consigliere - Blackmailer - Sheriffs - Escort - Veteran - Vigilante - Doctor - Investigator;
+        Villagers = Players - Godfather - Mafioso - Consort - Consigliere - Blackmailer - MafiaVillager - Sheriffs - Escort - Veteran - Vigilante - Doctor - Investigator;
     }
     
     public List<Role> GetRoleCounts()
@@ -42,6 +44,7 @@ public class GameConfiguration
         var availableRoles = new List<Role>();
             
         if (Villagers != 0)     availableRoles.AddRange(Enumerable.Repeat(new Villager(), Villagers));
+        if (MafiaVillager != 0) availableRoles.AddRange(Enumerable.Repeat(new MafiaVillager(), Villagers));
         if (Consigliere != 0)   availableRoles.AddRange(Enumerable.Repeat(new Consigliere(), Consigliere));
         if (Godfather != 0)     availableRoles.AddRange(Enumerable.Repeat(new Godfather(), Godfather));
         if (Mafioso != 0)       availableRoles.AddRange(Enumerable.Repeat(new Mafioso(), Mafioso));
@@ -62,6 +65,7 @@ public class GameConfiguration
         var availableRoles = new List<Role>();
 
         if (Villagers != 0) availableRoles.Add(new Villager());
+        if (MafiaVillager != 0) availableRoles.Add(new MafiaVillager());
         if (Consigliere != 0) availableRoles.Add(new Consigliere());
         if (Godfather != 0) availableRoles.Add(new Godfather());
         if (Mafioso != 0) availableRoles.Add(new Mafioso());

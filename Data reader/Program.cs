@@ -77,6 +77,7 @@ using (StreamReader sr = new StreamReader(filePath))
                 case "Godfather":
                 case "Mafioso":
                 case "Consort":
+                case "MafiaVillager":
                     isTown = false;
                     break;
                 default: break;
@@ -118,6 +119,7 @@ for(int i = 0; i < roles.Count; i++)
         case "Godfather":
         case "Mafioso":
         case "Consort":
+        case "MafiaVillager":
             isTown = false;
             break;
         default: break;
@@ -125,6 +127,6 @@ for(int i = 0; i < roles.Count; i++)
     double voteTotal = votes[i];
     double town = teamScores["Town"];
     double mafia = teamScores["Mafia"];
-    Console.WriteLine("Player:" + roles[i].PadRight(12) + "Total times survived: " + survivability[i].ToString().PadRight(6) + "Survivalrate: " + Math.Round(((survivability[i] / total) * 100), 2).ToString().PadRight(6) + "Total votes: " + votes[i].ToString().PadRight(6) + "Correctness of votes: " + Math.Round(((correctVotes[i] / voteTotal) * 100), 2).ToString().PadRight(6) + "Survivalrate on team win: " + (isTown ? Math.Round((surviveTeamWin[i] / town) * 100, 2).ToString().PadRight(6) : Math.Round((surviveTeamWin[i] / mafia) * 100, 2).ToString().PadRight(6)));
+    Console.WriteLine("Player:" + roles[i].PadRight(16) + "Total times survived: " + survivability[i].ToString().PadRight(6) + "Survivalrate: " + Math.Round(((survivability[i] / total) * 100), 2).ToString().PadRight(6) + "Total votes: " + votes[i].ToString().PadRight(6) + "Correctness of votes: " + Math.Round(((correctVotes[i] / voteTotal) * 100), 2).ToString().PadRight(6) + "Survivalrate on team win: " + (isTown ? Math.Round((surviveTeamWin[i] / town) * 100, 2).ToString().PadRight(6) : Math.Round((surviveTeamWin[i] / mafia) * 100, 2).ToString().PadRight(6)));
 
 }
